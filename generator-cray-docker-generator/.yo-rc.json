@@ -1,0 +1,9 @@
+{
+  "generator-node": {
+    "promptValues": {
+      "authorName": "Alex Lovell-Troy",
+      "authorEmail": "alovelltr@cray.com",
+      "authorUrl": ""
+    }
+  }
+}
