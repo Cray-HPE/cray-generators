@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for dir in /cray-generators/generator-*/; do 
+  cd $dir
+  npm link --only=production --no-package-lock
+done
