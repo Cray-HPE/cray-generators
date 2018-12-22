@@ -1,1 +1,6 @@
-node_modules
+*
+!/package.json
+!/.container/links
+!/generator-*
+/generator-*/*
+!/generator-*/package.json

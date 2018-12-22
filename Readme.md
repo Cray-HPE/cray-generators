@@ -2,12 +2,13 @@
 
 The following generators are available:
 
-1. [`cray-service`](generator-cray-service/): if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
+* [`cray-service`](generator-cray-service/): if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
+* [`cray-generator`](generator-cray-generator): A generator for creating a new Cray generator, oh-so meta
 
 There are only two local requirements for generating (TODO: remove *nix requirement, maybe Docker too):
 
-1. A *nix system
-2. [Docker installed](https://docs.docker.com/install/)
+* A *nix system
+* [Docker installed](https://docs.docker.com/install/)
 
 Then,
 
@@ -23,5 +24,9 @@ The above will kick off a process that will ask you some questions to generate w
 
 ## Developing New Generators
 
-TODO: fill this out
+```
+./generate cray-generator
+```
+
+Run the above, it'll ask you some questions, and then create a new named generator directory here. You can then begin development on the generator itself locally. Refer to the README in the newly-created generator for more info on developing it out.
 
