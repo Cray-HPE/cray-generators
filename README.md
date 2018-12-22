@@ -12,7 +12,7 @@ To run generators, there are really only two local machine requirements:
 * A *nix system
 * [Docker installed](https://docs.docker.com/install/)
 
-The following generators are available:
+## The following generators are available
 
 * **`cray-service`**: if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
 * **`cray-generator`**: A generator for creating a new Cray generator, in an oh-so meta way
