@@ -17,7 +17,7 @@ To run generators, there are really only two local machine requirements:
 * **`cray-service`**: if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
 * **`cray-generator`**: A generator for creating a new Cray generator, in an oh-so meta way
 
-Then,
+You can run these generators by:
 
 ```
 ./generate <generator name>
