@@ -1,4 +1,4 @@
-# <%= generatorName %>
+# <%= generatorCrayName %>
 
 <%= generatorDescription %>
 

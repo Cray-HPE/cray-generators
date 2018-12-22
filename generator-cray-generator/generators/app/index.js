@@ -44,7 +44,8 @@ module.exports = class extends CrayGenerator {
 
   configuring () {
     this.props.generatorBaseName  = this.props.generatorName.replace(/^(generator-)?(cray-)?/g, '')
-    this.props.generatorName      = `generator-cray-${this.props.generatorBaseName}`
+    this.props.generatorCrayName  = `cray-${this.props.generatorBaseName}`
+    this.props.generatorName      = `generator-${this.props.generatorCrayName}`
   }
 
   writing () {
