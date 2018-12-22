@@ -10,5 +10,5 @@ if [[ -z "$1" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "help" ]]; then
   exit
 fi
 
-./.container/build-run
+./.container/build-and-start
 docker exec -it cray-generators yo --no-insight $@

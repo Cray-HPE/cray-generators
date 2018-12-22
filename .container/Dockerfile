@@ -10,7 +10,7 @@ RUN mkdir /opt/cray-generators
 COPY ./package.json /opt/package.json
 COPY . /opt/cray-generators
 WORKDIR /opt
-RUN npm install --no-package-lock
+RUN npm install
 RUN /opt/cray-generators/.container/links
 ENV PATH /opt/node_modules/.bin:$PATH
 ENV NODE_PATH /opt/cray-generators:/opt/node_modules
@@ -19,8 +19,8 @@ RUN mkdir /repos
 RUN chown -R node:node /opt/cray-generators && \
     chown -R node:node /repos
 
-######## cray-generator #########
-FROM dependencies as cray-generator
+######## cray-generators #########
+FROM dependencies as cray-generators
 
 VOLUME [ "/opt/cray-generators" ]
 WORKDIR /opt/cray-generators

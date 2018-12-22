@@ -1,7 +1,7 @@
 const path    = require('path')
 const assert  = require('yeoman-assert')
 const helpers = require('yeoman-test')
-const fsExtra = require('fs-extra')
+const fs      = require('fs-extra')
 
 describe('generator-cray-generator:app', () => {
 
@@ -26,7 +26,7 @@ describe('generator-cray-generator:app', () => {
   }
 
   afterAll(() => {
-    fsExtra.removeSync(destinationRoot)
+    fs.removeSync(destinationRoot)
   })
 
   it('ensure that all files are created for a common run', () => {
@@ -65,6 +65,17 @@ describe('generator-cray-generator:app', () => {
       assert.file([
         path.resolve(destinationRoot, 'generator-cray-whatever', 'package.json'),
       ])
+    })
+  })
+
+  it('ensure that the package json values are set as expected', () => {
+    return createGenerator().then(() => {
+      const expectedName = `generator-cray-${generatorName}`
+      const pkg = JSON.parse(fs.readFileSync(path.resolve(destinationRoot, expectedName, 'package.json')))
+      expect(pkg.name).toEqual(expectedName)
+      expect(pkg.description).toEqual(generatorDescription)
+      expect(pkg.contributors[0].name).toEqual(contributorName)
+      expect(pkg.contributors[0].email).toEqual(contributorEmail)
     })
   })
 

@@ -1,3 +1,8 @@
 node_modules
-coverage
+coverage/
+jsdocs/
 *.log
+
+# Since our node operations will run in a container, we're opting to not deal in scm for package-lock files
+# We can still maintain them in the built image itself
+package-lock.json

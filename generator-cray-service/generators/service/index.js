@@ -1,12 +1,19 @@
 const CrayGenerator = require('lib/cray-generator')
 
+/**
+ * Base service/API resource generator for the cray-service generator
+ * <br/><br/>
+ * See the source linked below and the <a href="https://yeoman.io/authoring/index.html">Yeoman generator authoring docs</a> for more info.
+ * @type CrayGenerator
+ * @name cray-service:service
+ */
 module.exports = class extends CrayGenerator {
 
-  initializing() {
+  initializing () {
     this.options.appProps = this.options.appProps || {}
   }
 
-  prompting() {
+  prompting () {
     this.log(this.yosay(this.chalk.cyan('Cray Service/API Development Resources'), { maxLength: this.yosayWidth }))
     const prompts = [
       {
@@ -43,7 +50,7 @@ module.exports = class extends CrayGenerator {
     })
   }
  
-  writing() {
+  writing () {
     this.destinationRoot(this.options.repoPath)
     this.fs.copyTpl(
       this.templatePath('Jenkinsfile.tpl'),
@@ -75,6 +82,6 @@ module.exports = class extends CrayGenerator {
     //   this.templatePath('version.tpl'),
     //   this.destinationPath(this.props.projectName + '/.version')
     // );
-
   }
+
 }

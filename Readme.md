@@ -2,8 +2,8 @@
 
 The following generators are available:
 
-* [`cray-service`](generator-cray-service/): if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
-* [`cray-generator`](generator-cray-generator): A generator for creating a new Cray generator, oh-so meta
+* **`cray-service`**: if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
+* **`cray-generator`**: A generator for creating a new Cray generator, in an oh-so meta way
 
 There are only two local requirements for generating (TODO: remove *nix requirement, maybe Docker too):
 

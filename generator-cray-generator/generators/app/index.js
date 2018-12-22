@@ -1,13 +1,18 @@
 const CrayGenerator = require('lib/cray-generator')
 const path          = require('path')
 
+/**
+ * Generator for generators.
+ * <br/></br/>
+ * See the source linked below and the <a href="https://yeoman.io/authoring/index.html">Yeoman generator authoring docs</a> for more info. 
+ * @type CrayGenerator
+ * @name cray-generator:app
+ */
 module.exports = class extends CrayGenerator {
   
-  prompting() {
-    this.log(
-      this.yosay(`Welcome to the\n\n${this.chalk.cyan(' Cray generator, um...generator ')} \n\nYou ` +
-                 'can use this generator to start creating your own generator.', { maxLength: this.yosayWidth })
-    )
+  prompting () {
+    this.notify(`Welcome to the\n\n${this.chalk.cyan(' Cray generator, um...generator ')} \n\n` +
+                'You can use this generator to start creating your own generator.')
 
     const prompts = [
       {
@@ -37,11 +42,12 @@ module.exports = class extends CrayGenerator {
     })
   }
 
-  configuring() {
-    this.props.generatorName = `generator-cray-${this.props.generatorName.replace(/^(generator-)?(cray-)?/, '')}`
+  configuring () {
+    this.props.generatorBaseName  = this.props.generatorName.replace(/^(generator-)?(cray-)?/g, '')
+    this.props.generatorName      = `generator-cray-${this.props.generatorBaseName}`
   }
 
-  writing() {
+  writing () {
     const pkg         = this.fs.readJSON(path.resolve(this.projectRoot, 'generator-cray-generator', 'package.json'))
     pkg.name          = this.props.generatorName
     pkg.description   = this.props.generatorDescription
@@ -76,12 +82,9 @@ module.exports = class extends CrayGenerator {
     
   }
 
-  end() {
-    this.log(
-      this.yosay(`Your generator has been initialized at /${this.props.generatorName}. ` +
-                 'Please see the README in that directory for further help on building out a generator',
-                 { maxLength: this.yosayWidth })
-    )
+  end () {
+    this.notify(`Your generator has been initialized at /${this.props.generatorName}. ` +
+                'Please see the README in that directory for further help on building out a generator')
   }
 
 }

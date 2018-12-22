@@ -6,5 +6,8 @@ if [ ! -z "$exited_container" ]; then
 fi
 if [ -z "$(docker ps -a --filter name=^cray\-generators$ --quiet)" ]; then
   docker build -f .container/Dockerfile -t cray/generators .
-  docker run -t -d --name cray-generators -v "$(pwd):/opt/cray-generators" cray/generators:latest /bin/sh
+  docker run -t -d --name cray-generators \
+    -v "$(pwd):/opt/cray-generators" \
+    -v "/opt/cray-generators/node_modules" \
+    cray/generators:latest /bin/sh
 fi

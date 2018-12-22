@@ -3,10 +3,5 @@
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd $this_dir
 
-cmd="npm run test"
-if [[ ! -z "$@" ]]; then
-  cmd="npm run testcustom -- $@"
-fi
-
 ./.container/build-and-start
-docker exec -it cray-generators $cmd
+docker exec -it cray-generators npm run build

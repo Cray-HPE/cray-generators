@@ -1,5 +1,12 @@
 const CrayGenerator = require('lib/cray-generator')
 
+/**
+ * Kubernetes-specific resource generator for the cray-service generator
+ * <br/><br/>
+ * See the source linked below and the <a href="https://yeoman.io/authoring/index.html">Yeoman generator authoring docs</a> for more info.
+ * @type CrayGenerator
+ * @name cray-service:kubernetes
+ */
 module.exports = class extends CrayGenerator {
 
   initializing() {
