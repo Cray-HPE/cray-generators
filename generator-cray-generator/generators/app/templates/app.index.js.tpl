@@ -10,7 +10,7 @@ const CrayGenerator = require('lib/cray-generator')
 module.exports = class extends CrayGenerator {
   
   prompting () {
-    this.notify(`Welcome to the\n\n${this.chalk.cyan(' <%= generatorCrayName %> ')}\n\n` +
+    this.notify(`This is the ${this.chalk.cyan('<%= generatorCrayName %> generator')}. ` +
                 '<%= generatorDescription %>')
 
     const prompts = []

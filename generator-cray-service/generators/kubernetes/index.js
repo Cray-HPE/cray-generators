@@ -14,7 +14,7 @@ module.exports = class extends CrayGenerator {
   }
 
   prompting() {
-    this.log(this.yosay(this.chalk.cyan('Cray Service Kubernetes Resources Generator'), { maxLength: this.yosayWidth }))
+    this.notify(this.chalk.cyan('Cray Service Kubernetes Resources Generator'))
     const prompts = [
       {
         type: 'confirm',

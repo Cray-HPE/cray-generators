@@ -14,7 +14,7 @@ module.exports = class extends CrayGenerator {
   }
 
   prompting () {
-    this.log(this.yosay(this.chalk.cyan('Cray Service/API Development Resources'), { maxLength: this.yosayWidth }))
+    this.notify(this.chalk.cyan('Cray Service/API Development Resources'))
     const prompts = [
       {
         type: 'list',

@@ -11,8 +11,8 @@ const path          = require('path')
 module.exports = class extends CrayGenerator {
   
   prompting () {
-    this.notify(`Welcome to the\n\n${this.chalk.cyan(' Cray generator, um...generator ')} \n\n` +
-                'You can use this generator to start creating your own generator.')
+    this.notify(`This is the ${this.chalk.cyan('Cray generator, um...generator')}. ` +
+                'You can use this generator to start creating your own generator. Phew.')
 
     const prompts = [
       {

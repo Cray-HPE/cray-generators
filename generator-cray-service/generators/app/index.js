@@ -14,11 +14,11 @@ module.exports = class extends CrayGenerator {
   }
 
   prompting () {
-    this.log(
-      this.yosay(`Welcome to the\n\n${this.chalk.cyan(' Cray Service Generator ')}\n\nYou can use this generator ` +
-            'to start a brand new service or bring your existing service up-to-date with Cray standard resources. ' +
-            'You\'ll want to have a repo created with an existing default branch, and that\'s really the only ' +
-            'requirement here.', { maxLength: this.yosayWidth })
+    this.notify(
+      `This is the ${this.chalk.cyan('Cray Service Generator')}. You can use this generator ` +
+      'to start a brand new service or bring your existing service up-to-date with Cray standard resources. ' +
+      'You\'ll want to have a repo created with an existing default branch, and that\'s really the only ' +
+      'requirement here.'
     )
     const prompts = [
       {
@@ -57,16 +57,13 @@ module.exports = class extends CrayGenerator {
     }).then(() => {
       return this.exec('git', ['push', '-f', 'origin', this.branch], { cwd: this.props.repoPath })
     }).then(() => {
-      this.log(
-        this.yosay(`A branch, ${this.branch}, has been pushed to ${this.props.repoUrl}. Use the link above to open a pull request ` +
-                   'on your repo for the changes made by this generator.', { maxLength: this.yosayWidth })
-      )  
+      this.notify(`A branch, ${this.branch}, has been pushed to ${this.props.repoUrl}. Use the link above ` +
+                  'to open a pull request on your repo for the changes made by this generator.')
     }).catch((error) => {
       if (error.stdout.match(/nothing\sto\scommit/g)) {
         this.log(
-          this.yosay(
-            'Looks like no changes were needed on your project, nothing to commit or push, have a nice day', 
-            { maxLength: this.yosayWidth }
+          this.notify(
+            'Looks like no changes were needed on your project, nothing to commit or push, have a nice day'
           )
         )
         process.exit(0)
