@@ -2,7 +2,7 @@
 
 Generator for a Cray service/API, with support for generating new services or updating existing ones with standard Cray resources
 
-This generator is currently based on the following resources:
+This generator is currently based on the following resources, refer to them as you work on building out your service further:
 * https://connect.us.cray.com/confluence/display/DST/Pipeline+Standards+for+Docker+Builds
 * https://connect.us.cray.com/confluence/pages/viewpage.action?pageId=100295358
 

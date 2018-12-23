@@ -46,11 +46,13 @@ module.exports = class extends CrayGeneratorSection {
   }
 
   default () {
-    this.generator.fs.copyTpl(
-      this.generator.templatePath('Jenkinsfile.tpl'),
-      this.generator.destinationPath('Jenkinsfile'),
-      this.generator.props
-    )
+    this.generator._writeTemplate('Jenkinsfile')
+    this.generator._writeTemplate('.version')
+    this.generator._writeTemplate('runBuildPrep.sh')
+    this.generator._writeTemplate('runCoverage.sh')
+    this.generator._writeTemplate('runLint.sh')
+    this.generator._writeTemplate('runPostBuild.sh')
+    this.generator._writeTemplate('runUnitTest.sh')
   }
 
 }

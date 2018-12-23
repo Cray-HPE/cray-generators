@@ -25,7 +25,19 @@ module.exports = class extends CrayGeneratorSection {
   }
 
   default () {
-    this.generator.log('kubernetes default')
+    this.generator.props.kubernetesType = 'Deployment'
+    if (this.generator.props.isDaemon) {
+      this.generator.props.kubernetesType = 'DaemonSet'
+    } else if (this.generator.props.hasPersistentData) {
+      this.generator.props.kubernetesType = 'StatefulSet'
+    }
+    this.generator._writeTemplate('kubernetes/Chart.yaml')
+    this.generator._writeTemplate('kubernetes/values.yaml')
+    this.generator._writeTemplate('kubernetes/requirements.yaml')
+    this.generator._writeTemplate('kubernetes/README.md')
+    this.generator._writeTemplate('kubernetes/.gitignore')
+    this.generator._writeTemplate('kubernetes/templates/_helpers.tpl')
+    this.generator._writeTemplate('kubernetes/templates/NOTES.txt')
   }
 
 }

@@ -20,6 +20,16 @@ module.exports = class extends CrayGenerator {
       default: 'yes',
       description: 'whether or not to push changes to the repo',
     })
+    this.option('overwrite', {
+      type: String,
+      default: 'yes',
+      description: 'whether or not to overwrite existing files in the repo',
+    })
+    this.option('force-push', {
+      type: String,
+      default: 'no',
+      description: 'whether or not to run the git push as a forced git push',
+    })
   }
 
   initializing () {
@@ -89,7 +99,7 @@ module.exports = class extends CrayGenerator {
     if (falsey(this.options.push)) {
       this.notify('Not committing/pushing changes because the push option was set to off')
     } else {
-      return this.git.commitAndPush(this.props.repoPath, 'cray-service generator updates').then(() => {
+      return this.git.commitAndPush(this.props.repoPath, 'cray-service generator updates', !falsey(this.options['force-push'])).then(() => {
         this.notify(`Branch ${this.branch} has been pushed to ${this.props.repoUrl}. Use the link above ` +
                     'to open a pull request on your repo for the changes made by this generator.')  
       }).catch(this.handleError)
