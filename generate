@@ -6,7 +6,7 @@ cd $this_dir
 
 if [[ -z "$1" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "help" ]]; then
   generator_names=$(ls | grep '^generator-.*' | awk -F '-' '{print $2"-"$3}' | tr '\n' '|')
-  echo "Usage: $0 [${generator_names}help]"
+  echo "Usage: $0 [${generator_names}help] [--sections=<comma-delimited list of sections to run w/in the generator, where applicable>]"
   exit
 fi
 

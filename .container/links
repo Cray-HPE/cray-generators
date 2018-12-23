@@ -2,5 +2,5 @@
 
 for dir in /opt/cray-generators/generator-*/; do 
   cd $dir
-  npm link
+  npm link --no-package-lock
 done
