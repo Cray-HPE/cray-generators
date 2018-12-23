@@ -8,7 +8,6 @@ const CrayGeneratorSection = require('lib/cray-generator-section')
 module.exports = class extends CrayGeneratorSection {
 
   prompts () {
-    if (!this.enabled) return []
     return [
       {
         type: 'list',
@@ -36,12 +35,17 @@ module.exports = class extends CrayGeneratorSection {
             value: 'nodejs'
           }
         ]
-      }
+      },
+      {
+        type: 'confirm',
+        name: 'isApi',
+        message: 'Will your service expose a RESTful API?',
+        default: true,
+      },
     ]
   }
 
   default () {
-    if (!this.enabled) return
     this.generator.fs.copyTpl(
       this.generator.templatePath('Jenkinsfile.tpl'),
       this.generator.destinationPath('Jenkinsfile'),

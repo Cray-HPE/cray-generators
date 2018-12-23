@@ -2,6 +2,7 @@ const CrayGenerator     = require('lib/cray-generator')
 const Git               = require('lib/git')
 const ServiceSection    = require('./service')
 const KubernetesSection = require('./kubernetes')
+const falsey            = require('falsey')
 
 /**
  * Generator for a Cray service/API, with support for generating new services or updating existing ones with standard Cray resources.
@@ -12,6 +13,15 @@ const KubernetesSection = require('./kubernetes')
  */
 module.exports = class extends CrayGenerator {
 
+  constructor (args, opts) {
+    super(args, opts)
+    this.option('push', {
+      type: String,
+      default: 'yes',
+      description: 'whether or not to push changes to the repo',
+    })
+  }
+
   initializing () {
     this.git            = null
     this.branch         = 'feature/cray-service-generator-updates'
@@ -19,8 +29,8 @@ module.exports = class extends CrayGenerator {
     this.gitConfigEmail = 'casm-cloud@cray.com'
     this.rootRepoPath   = '/tmp'
     this.sections       = {
-      service: new ServiceSection(this, this.isSectionEnabled('service')),
-      kubernetes: new KubernetesSection(this, this.isSectionEnabled('kubernetes')),
+      service: new ServiceSection(this, 'service'),
+      kubernetes: new KubernetesSection(this, 'kubernetes'),
     }
   }
 
@@ -76,14 +86,21 @@ module.exports = class extends CrayGenerator {
   }
 
   install () {
-    return this.git.commitAndPush(this.props.repoPath, 'cray-service generator updates').then(() => {
-      this.notify(`Branch ${this.branch} has been pushed to ${this.props.repoUrl}. Use the link above ` +
-                  'to open a pull request on your repo for the changes made by this generator.')  
-    }).catch(this.handleError)
+    if (falsey(this.options.push)) {
+      this.notify('Not committing/pushing changes because the push option was set to off')
+    } else {
+      return this.git.commitAndPush(this.props.repoPath, 'cray-service generator updates').then(() => {
+        this.notify(`Branch ${this.branch} has been pushed to ${this.props.repoUrl}. Use the link above ` +
+                    'to open a pull request on your repo for the changes made by this generator.')  
+      }).catch(this.handleError)
+    }
   }
 
   end () {
     this.fse.removeSync(this.props.repoPath)
+    this.notify('One final note, after creating a new service or updating an existing one, please refer to ' + 
+                'the generator-cray-service/README.md for further guidance on Cray standards and other ' + 
+                'resources for working on your service.')
   }
 
 }

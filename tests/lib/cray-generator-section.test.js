@@ -15,9 +15,9 @@ describe('cray-generator-section', () => {
   }
 
   it('ensure constructor operates as expected', () => {
-    const section = new CrayGeneratorSection(new CrayGenerator(args, options), true)
+    const section = new CrayGeneratorSection(new CrayGenerator(args, options), 'name-of-section')
     expect(section).toBeInstanceOf(CrayGeneratorSection)
-    expect(section.enabled).toEqual(true)
+    expect(section.name).toEqual('name-of-section')
     expect(section.generator).toBeInstanceOf(CrayGenerator)
   })
 

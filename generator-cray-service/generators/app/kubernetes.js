@@ -8,17 +8,16 @@ const CrayGeneratorSection = require('lib/cray-generator-section')
 module.exports = class extends CrayGeneratorSection {
 
   prompts () {
-    if (!this.enabled) return []
     return [
       {
         type: 'confirm',
-        name: 'daemonSet',
+        name: 'isDaemon',
         message: 'Is your service a daemon, or in other words, does it need to run on every node of a Cray?',
         default: false,
       },
       {
         type: 'confirm',
-        name: 'persistentData',
+        name: 'hasPersistentData',
         message: 'Does your service rely on persistent data?',
         default: false,
       }
@@ -26,7 +25,6 @@ module.exports = class extends CrayGeneratorSection {
   }
 
   default () {
-    if (!this.enabled) return
     this.generator.log('kubernetes default')
   }
 
