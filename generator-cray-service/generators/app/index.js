@@ -110,6 +110,24 @@ module.exports = class extends CrayGenerator {
     this.notify(`Branch ${baseBranchName} on ${repoUrl} did not require changes`)
   }
 
+  /**
+   * Parses the git repo URL and returns the service name
+   * @param {string} repoUrl the URL for the git repo being used.
+   * @returns {string}
+   */
+  _getServiceName (repoUrl) {
+    return repoUrl.replace(/\.git$/, '').split('/').slice(-1)[0]
+  }
+
+  /**
+   * Parses the git repo URL and returns the service name
+   * @param {string} repoUrl the URL for the git repo being used.
+   * @returns {string}
+   */
+  _getRepoPath (repoUrl) {
+    return `${this.rootRepoPath}/${this._getServiceName(repoUrl)}`
+  }
+
   install () {
     if (falsey(this.options.push)) {
       this.notify('Not committing/pushing changes because the push option was set to off')

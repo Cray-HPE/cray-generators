@@ -39,7 +39,7 @@ module.exports = class extends CrayGeneratorSection {
           return `${input.replace(/\s+/g, '-')}`
         },
         filter: (input, answer) => {
-          return `${input.replace(/\s+/g, '-')}`
+          return `${input.replace(/\s+/g, '-').replace(/^cray-/, '')}`
         }
       },
        {
@@ -52,10 +52,6 @@ module.exports = class extends CrayGeneratorSection {
         transformer: (input, answer) => {
           let repoPath = this.generator._getRepoPath(answer.repoUrl)
           return `.${repoPath.replace(this.generator.rootRepoPath, '')}/${input}`
-        },
-        filter: (input, answer) => {
-          let repoPath = this.generator._getRepoPath(answer.repoUrl)
-          return path.join(repoPath, input)
         }
       },
     ]
@@ -75,14 +71,16 @@ module.exports = class extends CrayGeneratorSection {
 
   writing () {
     if (this.props.cliEnabled) {
-      const moduleName = this.props.cliName.replace(/^cray-/, '')
+      const moduleName = this.props.cliName
       const specFileName = path.basename(this.props.cliSpecFile)
+      const specFileFullPath = path.join(this.generator.props.repoPath, this.props.cliSpecFile)
       if (this.generator.fse.existsSync(this.props.cliSpecFile)) {
-        this.generator.fs.copy(this.props.cliSpecFile, `${this.repoPath}/cray/modules/${moduleName}/${this.specFileName}`)
+        this.generator.fs.copy(specFileFullPath, `${this.repoPath}/cray/modules/${moduleName}/${specFileName}`)
       } else {
-        throw `Spec file not found! ${this.props.cliSpecFile}`
+        throw `Spec file not found! ${specFileFullPath}`
       }
       this.generator._writeTemplate('cli/__init__.py', `${this.repoPath}/cray/modules/${moduleName}/__init__.py`)
+      this.generator._writeTemplate('cli/remote.json', `${this.repoPath}/cray/modules/${moduleName}/remote.json`)
       this.generator._writeTemplate('cli/cli.py', `${this.repoPath}/cray/modules/${moduleName}/cli.py`)
     }
   }
