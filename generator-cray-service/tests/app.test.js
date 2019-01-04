@@ -42,7 +42,7 @@ describe('generator-cray-service:app', () => {
       isApi: 'y',
       isDaemon: 'n',
       hasPersitentData: 'n',
-      enableCLI: 'n',
+      cliEnabled: 'n',
     }
   }
 

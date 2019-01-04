@@ -80,8 +80,8 @@ module.exports = class extends CrayGenerator {
   }
 
   configuring () {
-    this.props.serviceName  = this.props.repoUrl.replace(/\.git$/, '').split('/').slice(-1)[0]
-    this.props.repoPath     = `${this.rootRepoPath}/${this.props.serviceName}`
+    this.props.serviceName  = this._getServiceName(this.props.repoUrl)
+    this.props.repoPath     = this._getRepoPath(this.props.repoUrl)
     if (this.fse.existsSync(this.props.repoPath)) {
       this.fse.removeSync(this.props.repoPath)
     }
@@ -129,8 +129,8 @@ module.exports = class extends CrayGenerator {
 
   end () {
     this.fse.removeSync(this.props.repoPath)
-    this.notify('One final note, after creating a new service or updating an existing one, please refer to ' + 
-                'the generator-cray-service/README.md for further guidance on Cray standards and other ' + 
+    this.notify('One final note, after creating a new service or updating an existing one, please refer to ' +
+                'the generator-cray-service/README.md for further guidance on Cray standards and other ' +
                 'resources for working on your service.')
   }
 
