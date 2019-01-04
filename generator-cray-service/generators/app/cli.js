@@ -37,6 +37,9 @@ module.exports = class extends CrayGeneratorSection {
         },
         transformer: (input, answer) => {
           return `${input.replace(/\s+/g, '-')}`
+        },
+        filter: (input, answer) => {
+          return `${input.replace(/\s+/g, '-')}`
         }
       },
        {
