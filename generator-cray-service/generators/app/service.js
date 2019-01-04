@@ -45,7 +45,7 @@ module.exports = class extends CrayGeneratorSection {
     ]
   }
 
-  default () {
+  writing () {
     this.generator._writeTemplate('Jenkinsfile')
     this.generator._writeTemplate('.version')
     this.generator._writeTemplate('runBuildPrep.sh')
