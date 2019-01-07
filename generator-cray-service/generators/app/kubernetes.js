@@ -24,7 +24,7 @@ module.exports = class extends CrayGeneratorSection {
     ]
   }
 
-  default () {
+  writing () {
     this.generator.props.kubernetesType = 'Deployment'
     if (this.generator.props.isDaemon) {
       this.generator.props.kubernetesType = 'DaemonSet'
