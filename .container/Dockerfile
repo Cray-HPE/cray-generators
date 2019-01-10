@@ -1,7 +1,7 @@
 ######## base ########
 FROM node:10-alpine AS base
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git curl
 
 ######## dependencies ########
 FROM base AS dependencies

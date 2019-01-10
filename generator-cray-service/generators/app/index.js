@@ -68,7 +68,7 @@ module.exports = class extends CrayGenerator {
         type: 'password',
         name: 'repoPassword',
         message: 'And your password? (no credentials persist after this run)',
-      }
+      },
     ]
     prompts = prompts.concat(this.sections.service.prompts())
     prompts = prompts.concat(this.sections.kubernetes.prompts())

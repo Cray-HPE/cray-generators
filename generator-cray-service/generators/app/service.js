@@ -16,25 +16,13 @@ module.exports = class extends CrayGeneratorSection {
         choices: [
           {
             name: 'Python 3',
-            value: 'python3'            
-          }, 
-          {
-            name: 'Golang',
-            value: 'golang'
+            value: 'python3'
           },
           {
-            name: 'C++',
-            value: 'c++'
+            name: 'Go',
+            value: 'go'
           },
-          {
-            name: 'Python 2 (Obsolete)',
-            value: 'python2'
-          }, 
-          {
-            name: 'Node.js',
-            value: 'nodejs'
-          }
-        ]
+        ],
       },
       {
         type: 'confirm',
@@ -53,6 +41,23 @@ module.exports = class extends CrayGeneratorSection {
     this.generator._writeTemplate('runLint.sh')
     this.generator._writeTemplate('runPostBuild.sh')
     this.generator._writeTemplate('runUnitTest.sh')
+    let promise = Promise.resolve
+    if (this.props.isApi) {
+      this.generator._writeTemplate('schema/swagger.yaml')
+      if (this.generator.fse.existsSync(`${this.generator.props.repoPath}/swagger_server`)) {
+        promise = this.generator.prompt([{
+          type: 'confirm',
+          name: 'runSwaggerCodegen',
+          message: 'the swagger_server directory already exists in your project, would you like to re-run swagger codegen for your project?'
+        }])
+      }
+    }
+    return promise().then((response) => {
+      if (response && response.runSwaggerCodegen) {
+        // run it
+      }
+      this.generator._writeTemplate(`Dockerfile-${this.props.language}`, this.generator.destinationPath('Dockerfile'))
+    })
   }
 
 }
