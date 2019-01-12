@@ -12,7 +12,7 @@ module.exports = class extends CrayGeneratorSection {
 
   constructor (generator, name) {
     super(generator, name)
-    this.repoUrl  = 'https://stash.us.cray.com/scm/~pforce/craycli.git'
+    this.repoUrl  = 'https://stash.us.cray.com/scm/cloud/craycli.git'
     this.repoPath = null
     this.branch   = null
   }
