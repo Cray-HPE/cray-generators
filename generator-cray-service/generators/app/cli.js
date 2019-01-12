@@ -1,6 +1,7 @@
 const CrayGeneratorSection  = require('lib/cray-generator-section')
 const falsey                = require('falsey')
 const path                  = require('path')
+const fs                    = require('fs')
 
 /**
  * Handling of CLI integration
@@ -76,6 +77,12 @@ module.exports = class extends CrayGeneratorSection {
       return this.generator.git.commitAndPush(this.repoPath, commitMessage, { force: forcePush, openPullRequest: true }).then((result) => {
         this.generator._processGitCommitAndPushResult(result, this.repoUrl, this.branch)
       })
+    }
+  }
+
+  end () {
+    if (this.generator.responses.cliEnabled && fs.existsSync(this.repoPath)) {
+      this.generator.fse.removeSync(this.repoPath)
     }
   }
 

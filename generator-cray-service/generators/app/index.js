@@ -115,6 +115,7 @@ module.exports = class extends CrayGenerator {
 
   end () {
     this.fse.removeSync(this.props.repoPath)
+    this.sections.cli.end()
     this.notify('One final note, after creating a new service or updating an existing one, please refer to ' +
                 'the generator-cray-service/README.md for further guidance on Cray standards and other ' +
                 'resources for working on your service.')
