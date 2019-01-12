@@ -21,4 +21,22 @@ describe('cray-generator-section', () => {
     expect(section.generator).toBeInstanceOf(CrayGenerator)
   })
 
+  it('ensure that a section has appropriate returns for all methods in case of the section being disabled', () => {
+    const mockGenerator = {
+      isSectionEnabled: () => {
+        // force any section name disabled
+        return false
+      }
+    }
+    const section = new CrayGeneratorSection(mockGenerator, 'name-of-section')
+    expect(section.initializing()).toEqual(null)
+    expect(section.prompts()).toEqual([])
+    expect(section.configuring()).toEqual(null)
+    expect(section.default()).toEqual(null)
+    expect(section.writing()).toEqual(null)
+    expect(section.conflicts()).toEqual(null)
+    expect(section.install()).toEqual(null)
+    expect(section.end()).toEqual(null)
+  })
+
 })

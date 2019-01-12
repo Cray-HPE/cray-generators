@@ -4,9 +4,11 @@ describe('git', () => {
 
   let git           = null
   let shellExecStub = null
+  let requestStub   = null
 
   beforeEach(() => {
     git = new Git()
+    requestStub = jest.mock('request')
     shellExecStub = jest.spyOn(git.shell, 'exec').mockImplementation(() => {
       return Promise.resolve({
         code: 0,
@@ -21,6 +23,9 @@ describe('git', () => {
     if (shellExecStub && shellExecStub.mockRestore) {
       shellExecStub.mockRestore()
     }
+    if (requestStub && requestStub.mockRestore) {
+      requestStub.mockRestore()
+    }
   })
 
   it('ensure that getAuthenticatedUrl() injects a username and password into a url', () => {
@@ -29,7 +34,7 @@ describe('git', () => {
 
   it('ensure clone processes in most basic scenario', () => {
     return git.clone('http://repo', '/tmp/repo').then(() => {
-      expect(shellExecStub).toHaveBeenCalledWith('git', ['clone', git.getAuthenticatedUrl('http://repo'), '/tmp/repo'])
+      expect(shellExecStub).toHaveBeenCalledWith('git', ['clone', git.getAuthenticatedUrl('http://repo'), '/tmp/repo'], { mask: ['password'] })
     })
   })
 
@@ -91,10 +96,26 @@ describe('git', () => {
   })
 
   it('ensure that the flow of commitAndPush() operates as expected', () => {
-    return git.commitAndPush('/tmp/repo', 'a commit message').then(() => {
+    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, defaultBranch) => {
+      return Promise.resolve({ repoUrl, branchName, defaultBranch })
+    })
+    return git.commitAndPush('/tmp/repo', 'a commit message', { force: true, openPullRequest: true }).then(() => {
+      expect(shellExecStub).toHaveBeenCalledWith('git', ['status', '-s'], { cwd: '/tmp/repo' })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['add', '.'], { cwd: '/tmp/repo' })
+      expect(shellExecStub).toHaveBeenCalledWith('git', ['commit', '-m', 'a commit message'], { cwd: '/tmp/repo' })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: '/tmp/repo' })
-      expect(shellExecStub).toHaveBeenCalledWith('git', ['push', 'origin', 'mock stdout'], { cwd: '/tmp/repo' })
+      expect(shellExecStub).toHaveBeenCalledWith('git', ['push', '-f', 'origin', 'mock stdout'], { cwd: '/tmp/repo', mask: ['password'] })
+      expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'get-url', 'origin'], { cwd: '/tmp/repo', silent: true })
+      expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'show', 'origin'], { cwd: '/tmp/repo', silent: true })
+      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', null)
+      openPullRequestStub.mockRestore()
+    })
+  })
+
+  it('ensure that openPullRequest() fails with invalid repo url', () => {
+    expect.assertions(1)
+    return git.openPullRequest('invalid-repo-url', 'branch name').catch((error) => {
+      expect(error.message).toMatch(/Invalid\srepoUrl/g)
     })
   })
 

@@ -1,13 +1,35 @@
 #!/bin/bash
 
-exited_container=$(docker ps -a --filter name=^cray\-generators$ --filter status=exited --quiet)
-if [ ! -z "$exited_container" ]; then
-  docker rm cray-generators &> /dev/null
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+cd "$this_dir/../"
+existing_bridge=$(docker network ls --filter name=^crayce\-generators$ --quiet)
+if [ -z "$existing_bridge" ]; then
+  docker network create -d bridge crayce-generators
 fi
-if [ -z "$(docker ps -a --filter name=^cray\-generators$ --quiet)" ]; then
-  docker build -f .container/Dockerfile -t cray/generators .
-  docker run -t -d --name cray-generators \
+
+exited_container=$(docker ps -a --filter name=^crayce\-generators$ --filter status=exited --quiet)
+if [ ! -z "$exited_container" ]; then
+  docker rm crayce-generators &> /dev/null
+fi
+if [ -z "$(docker ps -a --filter name=^crayce\-generators$ --quiet)" ]; then
+  docker build -f .container/dockerfiles/generators/Dockerfile -t crayce/generators .
+  docker run --network crayce-generators -t -d --name crayce-generators \
     -v "$(pwd):/opt/cray-generators" \
     -v "/opt/cray-generators/node_modules" \
-    cray/generators:latest /bin/sh
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    crayce/generators:latest /bin/sh
+  docker exec -it -u root crayce-generators chown node /var/run/docker.sock
+fi
+
+exited_container=$(docker ps -a --filter name=^crayce\-generators-swagger-codegen$ --filter status=exited --quiet)
+if [ ! -z "$exited_container" ]; then
+  docker rm crayce-generators-swagger-codegen-cli &> /dev/null
+fi
+if [ -z "$(docker ps -a --filter name=^crayce\-generators\-swagger\-codegen\-cli$ --quiet)" ]; then
+  docker build -f .container/dockerfiles/generators-swagger-codegen-cli/Dockerfile -t crayce/generators-swagger-codegen-cli .
+  docker run --network crayce-generators -t -d --name crayce-generators-swagger-codegen-cli \
+    -v "$(pwd):/opt/cray-generators" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    crayce/generators-swagger-codegen-cli:latest /bin/sh
 fi

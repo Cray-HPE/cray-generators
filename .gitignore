@@ -2,6 +2,7 @@ node_modules
 coverage/
 jsdocs/
 *.log
+/.tmp
 
 # Since our node operations will run in a container, we're opting to not deal in scm for package-lock files
 package-lock.json
