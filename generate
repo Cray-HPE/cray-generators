@@ -4,24 +4,11 @@
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd $this_dir
 
-generators=$(ls | grep '^generator-.*' | awk -F '-' '{print $2"-"$3}')
 if [[ -z "$1" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "help" ]]; then
-  generator_choices=$(echo "$generators" | tr '\n' '|')
-  echo "Usage: $0 [${generator_choices}help]"
+  generator_names=$(ls | grep '^generator-.*' | awk -F '-' '{print $2"-"$3}' | tr '\n' '|')
+  echo "Usage: $0 [${generator_names}help] [--sections=<comma-delimited list of sections to run w/in the generator, where applicable>]"
   exit
 fi
 
-volumes=""
-for generator in $generators; do
-  volumes="$volumes -v $(pwd)/generator-${generator}:/cray-generators/generator-${generator}"
-done
-
-exited_container=$(docker ps -a --filter name=^cray\-generators$ --filter status=exited --quiet)
-if [ ! -z "$exited_container" ]; then
-  docker rm cray-generators &> /dev/null
-fi
-if [ -z "$(docker ps -a --filter name=^cray\-generators$ --quiet)" ]; then
-  docker build -f .container/Dockerfile -t cray/generators .
-  docker run -t -d -e NODE_PATH=/cray-generators --name cray-generators $volumes cray/generators:latest /bin/sh
-fi
-docker exec -it cray-generators /usr/local/bin/yo --no-insight $@
+./.container/build-and-start
+docker exec -u node -it craypc-generators yo --no-insight $@

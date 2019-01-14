@@ -1,0 +1,7 @@
+#!/bin/bash
+
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+cd $this_dir
+
+./.container/build-and-start
+docker exec -it craypc-generators npm run build

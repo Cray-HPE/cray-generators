@@ -6,5 +6,4 @@ dockerBuildPipeline {
     app = "<%= serviceName %>"
     name = "<%= serviceName %>"
     description = "Cray service <%= serviceName %>"
-    useLazyDocker = true
 }

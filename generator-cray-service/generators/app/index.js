@@ -1,118 +1,159 @@
-const CrayGenerator = require('lib/cray-generator')
-const fs            = require('fs-extra')
-const rimraf        = require('rimraf')
+const CrayGenerator     = require('lib/cray-generator')
+const Git               = require('lib/git')
+const ServiceSection    = require('./service')
+const KubernetesSection = require('./kubernetes')
+const CliSection        = require('./cli')
+const falsey            = require('falsey')
 
+/**
+ * Generator for a Cray service/API, with support for generating new services or updating existing ones with standard Cray resources.
+ * <br/><br/>
+ * See the source linked below and the <a href="https://yeoman.io/authoring/index.html">Yeoman generator authoring docs</a> for more info.
+ * @type CrayGenerator
+ * @name cray-service:app
+ */
 module.exports = class extends CrayGenerator {
 
-  initializing() {
-    this.branch = 'feature/cray-service-generator'
-    this.yosayLength = 80
-  }
-
-  prompting() {
-
-    this.log(
-      this.yosay(`Welcome to the\n\n${this.chalk.cyan('Cray Service Generator')}\n\nYou can use this generator ` +
-            `to start a brand new service or bring your existing service up-to-date with Cray standard resources. ` +
-            `You'll want to have a repo created with an existing default branch, and that's really the only requirement here.`, { maxLength: this.yosayLength })
-    )
-
-    const prompts = [
-      {
-        type: 'input',
-        name: 'repoUrl',
-        message: "What's the https URL to your project BitBucket repo?",
-      },
-      {
-        type: 'list',
-        name: 'language',
-        message: 'What is the primary language for your service?',
-        choices: [
-          {
-            name: 'Python 3',
-            value: 'python3'            
-          }, 
-          {
-            name: 'Golang',
-            value: 'golang'
-          },
-          {
-            name: 'C++',
-            value: 'c++'
-          },
-          {
-              name: 'Python 2 (Obsolete)',
-              value: 'python2'
-          }, 
-          {
-            name: 'Node.js',
-            value: 'nodejs'
-          }
-        ]
-      }
-    ]
-
-    return this.prompt(prompts).then(props => {
-      this.props = props
+  constructor (args, opts) {
+    super(args, opts)
+    this.option('push', {
+      type: String,
+      default: 'yes',
+      description: 'whether or not to push changes to the repo',
+    })
+    this.option('force-push', {
+      type: String,
+      default: 'no',
+      description: 'whether or not to run the git push as a forced git push',
     })
   }
 
-  configuring() {
-    this.spawnCommandSync('git', ['config', '--global', 'user.email', '"casm-cloud@cray.com"'])
-    this.spawnCommandSync('git', ['config', '--global', 'user.name', '"Cray Generators"'])
-  }
- 
-  writing() {
-    this.props.serviceName = this.props.repoUrl.replace(/\.git$/, '').split('/').slice(-1)[0]
-    this.props.repoPath    = `/cray-generators/repos/${this.props.serviceName}`
-    this.log(`Cloning repo at ${this.props.repoUrl} to ${this.props.repoPath}`)
-    if (fs.existsSync(`${this.props.repoPath}`)) {
-      fs.removeSync(`${this.props.repoPath}`)
+  initializing () {
+    this.git            = null
+    this.branch         = 'feature/cray-service-generator-updates'
+    this.rootRepoPath   = '/opt/cray-generators/.tmp'
+    this.sections       = {
+      service:    new ServiceSection(this, 'service'),
+      kubernetes: new KubernetesSection(this, 'kubernetes'),
+      cli:        new CliSection(this, 'cli'),
     }
-    this.spawnCommandSync('git', ['config', '--global', 'credential.helper', 'cache --timeout 3600'])
-    this.spawnCommandSync('git', ['clone', this.props.repoUrl, `${this.props.repoPath}`])
-    this.spawnCommandSync('git', ['checkout', '-b', this.branch], { cwd: this.props.repoPath })
-    this.fs.copy(
-      this.templatePath('Jenkinsfile.tpl'),
-      `${this.props.repoPath}/Jenkinsfile`
-    )
-    
-    // this.fs.copy(
-    //   this.templatePath('runBuildPrep.sh.tpl'),
-    //   this.destinationPath(this.props.projectName + '/runBuildPrep.sh')
-    // );
-    // this.fs.copy(
-    //   this.templatePath('runCoverage.sh.tpl'),
-    //   this.destinationPath(this.props.projectName + '/runCoverage.sh')
-    // );
-    // this.fs.copy(
-    //   this.templatePath('runLint.sh.tpl'),
-    //   this.destinationPath(this.props.projectName + '/runLint.sh')
-    // );
-    // this.fs.copy(
-    //   this.templatePath('runPostBuild.sh.tpl'),
-    //   this.destinationPath(this.props.projectName + '/runPostBuild.sh')
-    // );
-    // this.fs.copy(
-    //   this.templatePath('runUnitTest.sh.tpl'),
-    //   this.destinationPath(this.props.projectName + '/runUnitTest.sh')
-    // );
-    // this.fs.copy(
-    //   this.templatePath('version.tpl'),
-    //   this.destinationPath(this.props.projectName + '/.version')
-    // );
-
   }
 
-  install() {
-    this.spawnCommandSync('git', ['add', '.'], { cwd: this.props.repoPath })
-    this.spawnCommandSync('git', ['commit', '-m', '"cray-service generator updates"'], { cwd: this.props.repoPath })
-    this.spawnCommandSync('git', ['push', '-f', 'origin', this.branch], { cwd: this.props.repoPath })
-    this.log(
-      this.yosay(`A branch, ${this.branch}, has been pushed to ${this.props.repoUrl}. Use the link above to open a pull request ` +
-                 `on your repo for the changes made by this generator.`, { maxLength: this.yosayLength })
+  prompting () {
+    this.notify(
+      `This is the ${this.chalk.cyan('Cray Service Generator')}. You can use this generator ` +
+      'to start a brand new service or bring your existing service up-to-date with Cray standard resources. ' +
+      'You\'ll want to have a repo created with an existing default branch, and that\'s really the only ' +
+      'requirement here.'
     )
-    this.spawnCommandSync('git', ['credential-cache', 'exit'])
+    let prompts = [
+      {
+        type: 'input',
+        name: 'repoUrl',
+        message: 'What\'s the *https* (not ssh) URL to the service BitBucket/Stash repo?',
+      },
+      {
+        type: 'input',
+        name: 'repoUsername',
+        message: 'How about your username for accessing the repo?',
+      },
+      {
+        type: 'password',
+        name: 'repoPassword',
+        message: 'And your password? (no credentials persist after this run)',
+      },
+    ]
+    prompts = prompts.concat(this.sections.service.prompts())
+    prompts = prompts.concat(this.sections.kubernetes.prompts())
+    prompts = prompts.concat(this.sections.cli.prompts())
+
+    return this.prompt(prompts).then(responses => {
+      this.responses = responses
+    })
+  }
+
+  configuring () {
+    this.props.serviceName  = this._getServiceName(this.responses.repoUrl)
+    this.props.repoPath     = this._getRepoPath(this.responses.repoUrl)
+    if (this.fse.existsSync(this.props.repoPath)) {
+      this.fse.removeSync(this.props.repoPath)
+    }
+    this.git = new Git({ logger: this.log })
+    return this.git.configure(this.responses.repoUsername, this.responses.repoPassword, this.repoUsername, `${this.repoUsername}@cray.com`).then(() => {
+      return this.git.clone(this.responses.repoUrl, this.props.repoPath, this.branch)
+    }).then(() => {
+      this.destinationRoot(this.props.repoPath)
+      return this.sections.service.configuring()
+    }).then(() => {
+      return this.sections.cli.configuring()
+    }).catch(this.handleError)
+  }
+
+  writing () {
+    return this.sections.service.writing().then(() => {
+      this.sections.kubernetes.writing()
+      this.sections.cli.writing()
+    })
+  }
+
+  conflicts () {
+    return this.sections.service.conflicts()
+  }
+
+  install () {
+    if (falsey(this.options.push)) {
+      this.notify('Not committing/pushing changes because the push option was set to off')
+    } else {
+      const commitMessage = 'cray-service generator updates'
+      const forcePush     = !falsey(this.options['force-push'])
+      return this.git.commitAndPush(this.props.repoPath, commitMessage, { force: forcePush, openPullRequest: true }).then((result) => {
+        this._processGitCommitAndPushResult(result, this.responses.repoUrl, this.branch)
+        return this.sections.cli.install()
+      }).catch(this.handleError)
+    }
+  }
+
+  end () {
+    this.fse.removeSync(this.props.repoPath)
+    this.sections.cli.end()
+    this.notify('One final note, after creating a new service or updating an existing one, please refer to ' +
+                'the generator-cray-service/README.md for further guidance on Cray standards and other ' +
+                'resources for working on your service.')
+  }
+
+  /**
+   * Common way to process the results of the git.commitAndPush method
+   *
+   * @param {*} result the result of a git.commitAndPush call
+   * @param {string} repoUrl the repo URL relevant to the call
+   * @param {string} branchName the branch name relevant to the call
+   */
+  _processGitCommitAndPushResult (result, repoUrl, branchName) {
+    if (result == this.git.NO_CHANGES) {
+      this._notify(`The repo ${repoUrl}, branch ${branchName} did not require any changes`)
+    } else if (result == this.git.BRANCH_CREATED) {
+      this._notify(`Branch ${branchName} was created in ${repoUrl}`)
+    } else {
+      this._notify(`A pull request was opened automatically for ${branchName} in ${repoUrl}`)
+    }
+  }
+
+  /**
+   * Parses the git repo URL and returns the service name
+   * @param {string} repoUrl the URL for the git repo being used.
+   * @returns {string}
+   */
+  _getServiceName (repoUrl) {
+    return repoUrl.replace(/\.git$/, '').split('/').slice(-1)[0]
+  }
+
+  /**
+   * Parses the git repo URL and returns the service name
+   * @param {string} repoUrl the URL for the git repo being used.
+   * @returns {string}
+   */
+  _getRepoPath (repoUrl) {
+    return `${this.rootRepoPath}/${this._getServiceName(repoUrl)}`
   }
 
 }
