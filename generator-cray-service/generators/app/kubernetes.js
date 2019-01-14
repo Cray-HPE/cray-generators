@@ -20,6 +20,12 @@ module.exports = class extends CrayGeneratorSection {
         name: 'hasPersistentData',
         message: 'Does your service rely on persistent data?',
         default: false,
+      },
+      {
+        type: 'confirm',
+        name: 'useApiGateway',
+        message: 'Will your service need to be exposed via an API gateway?',
+        default: false,
       }
     ]
   }
