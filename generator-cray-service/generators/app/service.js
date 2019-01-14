@@ -129,7 +129,7 @@ module.exports = class extends CrayGeneratorSection {
     this.generator._writeTemplate('runPostBuild.sh')
     this.generator._writeTemplate('runUnitTest.sh')
     if (this.generator.responses.isApi && this.generator.props.swagger.runCodegen) {
-      return this.generator.shell.exec('docker', ['exec', 'crayce-generators-swagger-codegen-cli',
+      return this.generator.shell.exec('docker', ['exec', 'craypc-generators-swagger-codegen-cli',
         'java', '-jar', '/opt/swagger-codegen-cli/swagger-codegen-cli.jar',
         'generate', '-i', `${this.generator.props.repoPath}/${this.generator.props.swagger.specFilePath}`, '-l',
         this.swaggerTypes[this.generator.responses.language], '-o', `${this.generator.props.repoPath}/`

@@ -2,21 +2,21 @@
 
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-if [ ! -z "$(docker ps -a --filter name=^crayce\-generators$ --quiet)" ]; then
-  docker rm -f crayce-generators
+if [ ! -z "$(docker ps -a --filter name=^craypc\-generators$ --quiet)" ]; then
+  docker rm -f craypc-generators
 fi
 
-if [ ! -z "$(docker ps -a --filter name=^crayce\-generators-swagger-codegen-cli$ --quiet)" ]; then
-  docker rm -f crayce-generators-swagger-codegen-cli
+if [ ! -z "$(docker ps -a --filter name=^craypc\-generators-swagger-codegen-cli$ --quiet)" ]; then
+  docker rm -f craypc-generators-swagger-codegen-cli
 fi
 
 cd "$this_dir/../"
-existing_bridge=$(docker network ls --filter name=^crayce\-generators$ --quiet)
+existing_bridge=$(docker network ls --filter name=^craypc\-generators$ --quiet)
 if [ ! -z "$existing_bridge" ]; then
-  docker network rm crayce-generators
+  docker network rm craypc-generators
 fi
 
 if [[ "$1" == "images" ]]; then
-  docker rmi crayce/generators
-  docker rmi crayce/generators-swagger-codegen-cli
+  docker rmi craypc/generators
+  docker rmi craypc/generators-swagger-codegen-cli
 fi

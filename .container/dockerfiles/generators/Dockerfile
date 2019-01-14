@@ -16,8 +16,8 @@ ENV PATH /opt/node_modules/.bin:$PATH
 ENV NODE_PATH /opt/cray-generators:/opt/node_modules
 RUN chown -R node:node /opt/cray-generators
 
-######## crayce-generators #########
-FROM dependencies as crayce-generators
+######## craypc-generators #########
+FROM dependencies as craypc-generators
 
 VOLUME [ "/opt/cray-generators" ]
 WORKDIR /opt/cray-generators
