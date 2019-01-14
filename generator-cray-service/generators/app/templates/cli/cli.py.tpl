@@ -1,5 +1,5 @@
 """<%= serviceName %>"""
-import cray
+from cray.generator import generate
 
 
-cray.generate(__file__)
+cli = generate(__file__)
