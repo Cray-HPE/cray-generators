@@ -1,6 +1,7 @@
 const CrayGeneratorSection  = require('lib/cray-generator-section')
 const falsey                = require('falsey')
-const path                  = require('path');
+const path                  = require('path')
+const fs                    = require('fs')
 
 /**
  * Handling of CLI integration
@@ -14,7 +15,6 @@ module.exports = class extends CrayGeneratorSection {
     this.repoUrl  = 'https://stash.us.cray.com/scm/cloud/craycli.git'
     this.repoPath = null
     this.branch   = null
-    this.props = {}
   }
 
   prompts () {
@@ -27,7 +27,7 @@ module.exports = class extends CrayGeneratorSection {
       },
       {
         when: (response) => {
-          return response.cliEnabled;
+          return response.cliEnabled
         },
         type: 'input',
         name: 'cliName',
@@ -35,33 +35,20 @@ module.exports = class extends CrayGeneratorSection {
         default: (response) => {
           return this.generator._getServiceName(response.repoUrl)
         },
-        transformer: (input, answer) => {
+        transformer: (input) => {
           return `${input.replace(/\s+/g, '-')}`
         },
-        filter: (input, answer) => {
+        filter: (input) => {
           return `${input.replace(/\s+/g, '-').replace(/^cray-/, '')}`
-        }
-      },
-       {
-        when: (response) => {
-          return response.cliEnabled;
-        },
-        type: 'input',
-        name: 'cliSpecFile',
-        message: 'What is the path to your OpenAPI Spec File (Swagger)?',
-        transformer: (input, answer) => {
-          let repoPath = this.generator._getRepoPath(answer.repoUrl)
-          return `.${repoPath.replace(this.generator.rootRepoPath, '')}/${input}`
         }
       },
     ]
   }
 
   configuring () {
-    this.props = this.generator.props
-    if (this.props.cliEnabled) {
+    if (this.generator.responses.cliEnabled) {
       this.repoPath = `${this.generator.rootRepoPath}/craycli`
-      this.branch   = `feature/${this.props.serviceName}-cli-integration`
+      this.branch   = `feature/${this.generator.props.serviceName}-cli-integration`
       if (this.generator.fse.existsSync(this.repoPath)) {
         this.generator.fse.removeSync(this.repoPath)
       }
@@ -70,15 +57,13 @@ module.exports = class extends CrayGeneratorSection {
   }
 
   writing () {
-    if (this.props.cliEnabled) {
-      const moduleName = this.props.cliName
-      const specFileName = path.basename(this.props.cliSpecFile)
-      const specFileFullPath = path.join(this.generator.props.repoPath, this.props.cliSpecFile)
-      if (this.generator.fse.existsSync(this.props.cliSpecFile)) {
-        this.generator.fs.copy(specFileFullPath, `${this.repoPath}/cray/modules/${moduleName}/${specFileName}`)
-      } else {
-        throw `Spec file not found! ${specFileFullPath}`
-      }
+    if (this.generator.responses.cliEnabled) {
+      const moduleName = this.generator.responses.cliName
+      const specFileName = path.basename(this.generator.props.swagger.specFilePath)
+      this.generator.fs.copy(
+        `${this.generator.props.repoPath}/${this.generator.props.swagger.specFilePath}`,
+        `${this.repoPath}/cray/modules/${moduleName}/${specFileName}`
+      )
       this.generator._writeTemplate('cli/__init__.py', `${this.repoPath}/cray/modules/${moduleName}/__init__.py`)
       this.generator._writeTemplate('cli/remote.json', `${this.repoPath}/cray/modules/${moduleName}/remote.json`)
       this.generator._writeTemplate('cli/cli.py', `${this.repoPath}/cray/modules/${moduleName}/cli.py`)
@@ -86,16 +71,18 @@ module.exports = class extends CrayGeneratorSection {
   }
 
   install () {
-    if (this.props.cliEnabled) {
-      const commitMessage = `cray-service generator updates for ${this.props.serviceName}`
+    if (this.generator.responses.cliEnabled) {
+      const commitMessage = `cray-service generator updates for ${this.generator.props.serviceName}`
       const forcePush     = !falsey(this.generator.options['force-push'])
-      return this.generator.git.commitAndPush(this.repoPath, commitMessage, forcePush).then((result) => {
-        if (result !== false) {
-          this.generator._notifyBranchPushed(this.branch, this.repoUrl)
-        } else {
-          this.generator._notifyRepoUnchanged(this.branch, this.repoUrl)
-        }
+      return this.generator.git.commitAndPush(this.repoPath, commitMessage, { force: forcePush, openPullRequest: true }).then((result) => {
+        this.generator._processGitCommitAndPushResult(result, this.repoUrl, this.branch)
       })
+    }
+  }
+
+  end () {
+    if (this.generator.responses.cliEnabled && fs.existsSync(this.repoPath)) {
+      this.generator.fse.removeSync(this.repoPath)
     }
   }
 

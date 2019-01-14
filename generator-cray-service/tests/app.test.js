@@ -1,5 +1,4 @@
 const path          = require('path')
-//const assert        = require('yeoman-assert')
 const helpers       = require('yeoman-test')
 const CrayGenerator = require('lib/cray-generator')
 const Shell         = require('lib/shell')
@@ -39,10 +38,12 @@ describe('generator-cray-service:app', () => {
       repoUsername: 'none',
       repoPassword: 'none',
       language: 'python3',
-      isApi: 'y',
-      isDaemon: 'n',
-      hasPersitentData: 'n',
-      cliEnabled: 'n',
+      isApi: true,
+      isDaemon: false,
+      hasPersitentData: false,
+      cliEnabled: false,
+      cliName: null,
+      cliSpecFile: null,
     }
   }
 

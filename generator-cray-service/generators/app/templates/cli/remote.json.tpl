@@ -1,5 +1,5 @@
 {
     "name": "<%= serviceName %>",
     "repo": "<%= repoUrl %>",
-    "path": "<%= cliSpecFile %>",
+    "path": "<%= swagger.specFilePath %>",
 }

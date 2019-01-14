@@ -20,16 +20,22 @@ module.exports = class extends CrayGeneratorSection {
         name: 'hasPersistentData',
         message: 'Does your service rely on persistent data?',
         default: false,
+      },
+      {
+        type: 'confirm',
+        name: 'useApiGateway',
+        message: 'Will your service need to be exposed via an API gateway?',
+        default: false,
       }
     ]
   }
 
   writing () {
-    this.generator.props.kubernetesType = 'Deployment'
-    if (this.generator.props.isDaemon) {
-      this.generator.props.kubernetesType = 'DaemonSet'
-    } else if (this.generator.props.hasPersistentData) {
-      this.generator.props.kubernetesType = 'StatefulSet'
+    this.generator.responses.kubernetesType = 'Deployment'
+    if (this.generator.responses.isDaemon) {
+      this.generator.responses.kubernetesType = 'DaemonSet'
+    } else if (this.generator.responses.hasPersistentData) {
+      this.generator.responses.kubernetesType = 'StatefulSet'
     }
     this.generator._writeTemplate('kubernetes/Chart.yaml')
     this.generator._writeTemplate('kubernetes/values.yaml')

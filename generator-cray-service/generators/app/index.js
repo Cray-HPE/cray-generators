@@ -21,11 +21,6 @@ module.exports = class extends CrayGenerator {
       default: 'yes',
       description: 'whether or not to push changes to the repo',
     })
-    this.option('overwrite', {
-      type: String,
-      default: 'yes',
-      description: 'whether or not to overwrite existing files in the repo',
-    })
     this.option('force-push', {
       type: String,
       default: 'no',
@@ -36,13 +31,11 @@ module.exports = class extends CrayGenerator {
   initializing () {
     this.git            = null
     this.branch         = 'feature/cray-service-generator-updates'
-    this.gitConfigName  = 'Cray Generators'
-    this.gitConfigEmail = 'casm-cloud@cray.com'
-    this.rootRepoPath   = '/tmp'
+    this.rootRepoPath   = '/opt/cray-generators/.tmp'
     this.sections       = {
-      service: new ServiceSection(this, 'service'),
+      service:    new ServiceSection(this, 'service'),
       kubernetes: new KubernetesSection(this, 'kubernetes'),
-      cli: new CliSection(this, 'cli'),
+      cli:        new CliSection(this, 'cli'),
     }
   }
 
@@ -68,46 +61,81 @@ module.exports = class extends CrayGenerator {
         type: 'password',
         name: 'repoPassword',
         message: 'And your password? (no credentials persist after this run)',
-      }
+      },
     ]
     prompts = prompts.concat(this.sections.service.prompts())
     prompts = prompts.concat(this.sections.kubernetes.prompts())
     prompts = prompts.concat(this.sections.cli.prompts())
 
-    return this.prompt(prompts).then(props => {
-      this.props = props
+    return this.prompt(prompts).then(responses => {
+      this.responses = responses
     })
   }
 
   configuring () {
-    this.props.serviceName  = this._getServiceName(this.props.repoUrl)
-    this.props.repoPath     = this._getRepoPath(this.props.repoUrl)
+    this.props.serviceName  = this._getServiceName(this.responses.repoUrl)
+    this.props.repoPath     = this._getRepoPath(this.responses.repoUrl)
     if (this.fse.existsSync(this.props.repoPath)) {
       this.fse.removeSync(this.props.repoPath)
     }
     this.git = new Git({ logger: this.log })
-    return this.git.configure(this.props.repoUsername, this.props.repoPassword, this.gitConfigName, this.gitConfigEmail).then(() => {
-      return this.git.clone(this.props.repoUrl, this.props.repoPath, this.branch)
+    return this.git.configure(this.responses.repoUsername, this.responses.repoPassword, this.repoUsername, `${this.repoUsername}@cray.com`).then(() => {
+      return this.git.clone(this.responses.repoUrl, this.props.repoPath, this.branch)
     }).then(() => {
       this.destinationRoot(this.props.repoPath)
+      return this.sections.service.configuring()
     }).then(() => {
       return this.sections.cli.configuring()
     }).catch(this.handleError)
   }
 
   writing () {
-    this.sections.service.writing()
-    this.sections.kubernetes.writing()
-    this.sections.cli.writing()
+    return this.sections.service.writing().then(() => {
+      this.sections.kubernetes.writing()
+      this.sections.cli.writing()
+    })
   }
 
-  _notifyBranchPushed (branchName, repoUrl) {
-    this.notify(`Branch ${branchName} has been pushed to ${repoUrl}. Use the link above ` +
-                'to open a pull request on your repo for the changes made by this generator.')
+  conflicts () {
+    return this.sections.service.conflicts()
   }
 
-  _notifyRepoUnchanged (baseBranchName, repoUrl) {
-    this.notify(`Branch ${baseBranchName} on ${repoUrl} did not require changes`)
+  install () {
+    if (falsey(this.options.push)) {
+      this.notify('Not committing/pushing changes because the push option was set to off')
+    } else {
+      const commitMessage = 'cray-service generator updates'
+      const forcePush     = !falsey(this.options['force-push'])
+      return this.git.commitAndPush(this.props.repoPath, commitMessage, { force: forcePush, openPullRequest: true }).then((result) => {
+        this._processGitCommitAndPushResult(result, this.responses.repoUrl, this.branch)
+        return this.sections.cli.install()
+      }).catch(this.handleError)
+    }
+  }
+
+  end () {
+    this.fse.removeSync(this.props.repoPath)
+    this.sections.cli.end()
+    this.notify('One final note, after creating a new service or updating an existing one, please refer to ' +
+                'the generator-cray-service/README.md for further guidance on Cray standards and other ' +
+                'resources for working on your service.')
+  }
+
+  /**
+   * Common way to process the results of the git.commitAndPush method
+   *
+   * @param {*} result the result of a git.commitAndPush call
+   * @param {string} repoUrl the repo URL relevant to the call
+   * @param {string} branchName the branch name relevant to the call
+   */
+  _processGitCommitAndPushResult (result, repoUrl, branchName) {
+    if (result == this.git.NO_CHANGES) {
+      this._notify(`The repo ${repoUrl}, branch ${branchName} did not require any changes`)
+    } else if (result == this.git.BRANCH_CREATED) {
+      this._notify(`Branch ${branchName} was created in ${repoUrl}`)
+    } else {
+      this._notify(`A pull request was opened automatically for ${branchName} in ${repoUrl}`)
+    }
   }
 
   /**
@@ -126,30 +154,6 @@ module.exports = class extends CrayGenerator {
    */
   _getRepoPath (repoUrl) {
     return `${this.rootRepoPath}/${this._getServiceName(repoUrl)}`
-  }
-
-  install () {
-    if (falsey(this.options.push)) {
-      this.notify('Not committing/pushing changes because the push option was set to off')
-    } else {
-      const commitMessage = 'cray-service generator updates'
-      const forcePush     = !falsey(this.options['force-push'])
-      return this.git.commitAndPush(this.props.repoPath, commitMessage, forcePush).then((result) => {
-        if (result !== false) {
-          this._notifyBranchPushed(this.branch, this.props.repoUrl)
-        } else {
-          this._notifyRepoUnchanged(this.branch, this.props.repoUrl)
-        }
-        return this.sections.cli.install()
-      }).catch(this.handleError)
-    }
-  }
-
-  end () {
-    this.fse.removeSync(this.props.repoPath)
-    this.notify('One final note, after creating a new service or updating an existing one, please refer to ' +
-                'the generator-cray-service/README.md for further guidance on Cray standards and other ' +
-                'resources for working on your service.')
   }
 
 }

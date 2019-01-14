@@ -12,4 +12,13 @@ describe('helpers', () => {
     expect(helpers.stringifyArgsArray([1, undefined, null, 'one', 'two'])).toEqual('1 one two')
   })
 
+  it('expect mask text to return masked text appropriately', () => {
+    expect(helpers.maskText('one two three password user', 'password')).toEqual('one two three ****** user')
+  })
+
+  it('expect mask to handle regex special characters correctly', () => {
+    const specialCharactersText = '^$*+?.()|{}[]'
+    expect(helpers.maskText(`one two three ${specialCharactersText} user`, specialCharactersText)).toEqual('one two three ****** user')
+  })
+
 })

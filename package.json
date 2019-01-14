@@ -4,7 +4,7 @@
   "description": "Various generators for different common project types at Cray",
   "repository": "https://stash.us.cray.com/projects/CLOUD/repos/cray-generators/",
   "homepage": "https://stash.us.cray.com/projects/CLOUD/repos/cray-generators/browse/",
-  "license": "Apache-2.0",
+  "license": "LicenseRef-LICENSE",
   "private": true,
   "author": {
     "name": "Cray",
@@ -31,8 +31,10 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "falsey": "^1.0.0",
+    "find": "^0.2.9",
     "fs-extra": "^7.0.1",
     "generator-generator": "^4.0.2",
+    "request": "2.88.0",
     "yeoman-generator": "^3.1.1",
     "yo": "^2.0.5",
     "yosay": "^2.0.2"

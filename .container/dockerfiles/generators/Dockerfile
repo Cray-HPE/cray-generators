@@ -1,9 +1,9 @@
 ######## base ########
 FROM node:10-alpine AS base
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git docker
 
-######## dependencies ########
+####### dependencies ########
 FROM base AS dependencies
 
 RUN mkdir /opt/cray-generators
@@ -16,8 +16,8 @@ ENV PATH /opt/node_modules/.bin:$PATH
 ENV NODE_PATH /opt/cray-generators:/opt/node_modules
 RUN chown -R node:node /opt/cray-generators
 
-######## cray-generators #########
-FROM dependencies as cray-generators
+######## craypc-generators #########
+FROM dependencies as craypc-generators
 
 VOLUME [ "/opt/cray-generators" ]
 WORKDIR /opt/cray-generators
