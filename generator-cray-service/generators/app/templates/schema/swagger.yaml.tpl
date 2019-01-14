@@ -1,11 +1,24 @@
 ---
 swagger: "2.0"
+host: "<%= serviceName %>"
+basePath: "/apis/<%= serviceName.replace(/^cray\-/, '') %>/v1"
 info:
   title: "<%= serviceName %>"
   description: "OpenAPI for <%= serviceName %>"
   version: "0.0.1"
 paths:
+  <% if (hasWebFrontend) { %>
   '/':
+    get:
+      summary: Web Frontend
+      tags: [ cli_ignore ]
+      produces:
+        - text/html
+      responses:
+        '200':
+          description: "Web frontend for <%= serviceName %>"
+  <% } %>
+  '/versions':
     get:
       summary: Returns supported versions
       tags: [ Versions ]
@@ -16,7 +29,7 @@ paths:
           description: Version response
           schema:
             $ref: "#/definitions/Versions"
-  '/v1/items':
+  '/items':
     get:
       summary: List items
       tags: [ Items ]
@@ -47,7 +60,7 @@ paths:
           description: Item created
           schema:
             $ref: "#/definitions/Item"
-  '/v1/items/{id}':
+  '/items/{id}':
     parameters:
       - in: path
         name: id
