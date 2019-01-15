@@ -140,12 +140,14 @@ module.exports = class extends CrayGeneratorSection {
         'generate', '-i', `${this.generator.props.repoPath}/${this.generator.props.swagger.specFilePath}`, '-l',
         this.swaggerTypes[this.generator.responses.language], '-o', `${this.generator.props.repoPath}/`
       ])
+    } else {
+      return Promise.resolve()
     }
   }
 
   conflicts () {
     if (this.generator.responses.isApi) {
-      if (fs.existsSync(path.resolve(__dirname, '..', 'templates', `Dockerfile-${this.generator.responses.language}`))) {
+      if (fs.existsSync(path.resolve(__dirname, 'templates', `Dockerfile-${this.generator.responses.language}.tpl`))) {
         if (fs.existsSync(this.generator.destinationPath('Dockerfile'))) {
           fs.unlinkSync(this.generator.destinationPath('Dockerfile'))
         }

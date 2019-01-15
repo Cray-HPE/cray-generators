@@ -18,7 +18,7 @@ volumes:
   #   storageClass: -
   #   size: 512Mb
 <% } %>
-<% if (useApiGateway) { %>
+<% if (isApi || hasWebFrontend) { %>
 ingress:
   enabled: true
 <% } %>
