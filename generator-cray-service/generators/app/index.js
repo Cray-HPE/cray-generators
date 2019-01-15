@@ -79,7 +79,12 @@ module.exports = class extends CrayGenerator {
       this.fse.removeSync(this.props.repoPath)
     }
     this.git = new Git({ logger: this.log })
-    return this.git.configure(this.responses.repoUsername, this.responses.repoPassword, this.repoUsername, `${this.repoUsername}@cray.com`).then(() => {
+    return this.git.configure(
+      this.responses.repoUsername,
+      this.responses.repoPassword,
+      this.responses.repoUsername,
+      `${this.responses.repoUsername}@cray.com`
+    ).then(() => {
       return this.git.clone(this.responses.repoUrl, this.props.repoPath, this.branch)
     }).then(() => {
       this.destinationRoot(this.props.repoPath)
