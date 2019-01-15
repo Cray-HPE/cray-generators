@@ -12,9 +12,11 @@ module.exports = class extends CrayGeneratorSection {
 
   constructor (generator, name) {
     super(generator, name)
-    this.repoUrl  = 'https://stash.us.cray.com/scm/cloud/craycli.git'
-    this.repoPath = null
-    this.branch   = null
+    this.repoUrl            = 'https://stash.us.cray.com/scm/cloud/craycli.git'
+    this.forkedRepoUrl      = null
+    this.repoPath           = null
+    this.branch             = null
+    this.forkCloneFailures  = 0
   }
 
   prompts () {
@@ -45,14 +47,33 @@ module.exports = class extends CrayGeneratorSection {
     ]
   }
 
+  /**
+   * Clones the user forked craycli repo, forks and then clones if a fork doesn't already exist
+   *
+   * @returns {Promise} the clone result
+   */
+  _cloneForkedRepo () {
+    return this.generator.git.clone(this.forkedRepoUrl, this.repoPath, this.branch).catch((error) => {
+      this.forkCloneFailures++
+      if (this.forkCloneFailures > 1) {
+        throw error
+      } else {
+        return this.generator.git.fork(this.repoUrl, `~${this.generator.responses.repoUsername}`).then(() => {
+          return this._cloneForkedRepo()
+        })
+      }
+    })
+  }
+
   configuring () {
     if (this.generator.responses.cliEnabled) {
-      this.repoPath = `${this.generator.rootRepoPath}/craycli`
-      this.branch   = `feature/${this.generator.props.serviceName}-cli-integration`
+      this.repoPath       = `${this.generator.rootRepoPath}/craycli`
+      this.branch         = `feature/${this.generator.props.serviceName}-cli-integration`
+      this.forkedRepoUrl  = `https://stash.us.cray.com/scm/~${this.generator.responses.repoUsername}/craycli.git`
       if (this.generator.fse.existsSync(this.repoPath)) {
         this.generator.fse.removeSync(this.repoPath)
       }
-      return this.generator.git.clone(this.repoUrl, this.repoPath, this.branch)
+      return this._cloneForkedRepo()
     }
   }
 
@@ -74,7 +95,15 @@ module.exports = class extends CrayGeneratorSection {
     if (this.generator.responses.cliEnabled) {
       const commitMessage = `cray-service generator updates for ${this.generator.props.serviceName}`
       const forcePush     = !falsey(this.generator.options['force-push'])
-      return this.generator.git.commitAndPush(this.repoPath, commitMessage, { force: forcePush, openPullRequest: true }).then((result) => {
+      return this.generator.git.commitAndPush(
+        this.repoPath,
+        commitMessage,
+        {
+          force: forcePush,
+          openPullRequest: true,
+          pullRequestDestination: this.repoUrl,
+        }
+      ).then((result) => {
         this.generator._processGitCommitAndPushResult(result, this.repoUrl, this.branch)
       })
     }

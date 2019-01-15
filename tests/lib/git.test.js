@@ -107,7 +107,7 @@ describe('git', () => {
       expect(shellExecStub).toHaveBeenCalledWith('git', ['push', '-f', 'origin', 'mock stdout'], { cwd: '/tmp/repo', mask: ['password'] })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'get-url', 'origin'], { cwd: '/tmp/repo', silent: true })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'show', 'origin'], { cwd: '/tmp/repo', silent: true })
-      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', null)
+      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', { defaultBranch: null, destinationRepoUrl: 'mock stdout' })
       openPullRequestStub.mockRestore()
     })
   })
