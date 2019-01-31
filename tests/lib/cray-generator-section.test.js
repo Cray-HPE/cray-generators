@@ -29,14 +29,14 @@ describe('cray-generator-section', () => {
       }
     }
     const section = new CrayGeneratorSection(mockGenerator, 'name-of-section')
-    expect(section.initializing()).toEqual(null)
+    expect(section.initializing()).toBeInstanceOf(Promise)
     expect(section.prompts()).toEqual([])
-    expect(section.configuring()).toEqual(null)
-    expect(section.default()).toEqual(null)
-    expect(section.writing()).toEqual(null)
-    expect(section.conflicts()).toEqual(null)
-    expect(section.install()).toEqual(null)
-    expect(section.end()).toEqual(null)
+    expect(section.configuring()).toBeInstanceOf(Promise)
+    expect(section.default()).toBeInstanceOf(Promise)
+    expect(section.writing()).toBeInstanceOf(Promise)
+    expect(section.conflicts()).toBeInstanceOf(Promise)
+    expect(section.install()).toBeInstanceOf(Promise)
+    expect(section.end()).toBeInstanceOf(Promise)
   })
 
 })

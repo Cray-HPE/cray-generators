@@ -62,6 +62,18 @@ module.exports = class extends CrayGenerator {
         name: 'repoPassword',
         message: 'And your password? (no credentials persist after this run)',
       },
+      {
+        type: 'confirm',
+        name: 'isApi',
+        message: 'Will your service expose a RESTful API?',
+        default: true,
+      },
+      {
+        type: 'confirm',
+        name: 'hasWebFrontend',
+        message: 'Will your service expose a web frontend?',
+        default: false,
+      },
     ]
     prompts = prompts.concat(this.sections.service.prompts())
     prompts = prompts.concat(this.sections.kubernetes.prompts())
