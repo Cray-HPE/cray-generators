@@ -40,18 +40,6 @@ module.exports = class extends CrayGeneratorSection {
           },
         ],
       },
-      {
-        type: 'confirm',
-        name: 'isApi',
-        message: 'Will your service expose a RESTful API?',
-        default: true,
-      },
-      {
-        type: 'confirm',
-        name: 'hasWebFrontend',
-        message: 'Will your service expose a web frontend?',
-        default: false,
-      }
     ]
   }
 
