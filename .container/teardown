@@ -17,6 +17,10 @@ if [ ! -z "$existing_bridge" ]; then
 fi
 
 if [[ "$1" == "images" ]]; then
-  docker rmi craypc/generators
-  docker rmi craypc/generators-swagger-codegen-cli
+  if [ ! -z "$(docker images 'craypc/generators' --quiet)" ]; then
+    docker rmi craypc/generators
+  fi
+  if [ ! -z "$(docker images 'craypc/generators-swagger-codegen-cli' --quiet)" ]; then
+    docker rmi craypc/generators-swagger-codegen-cli
+  fi
 fi
