@@ -9,4 +9,4 @@ if [[ ! -z "$@" ]]; then
 fi
 
 ./.container/build-and-start
-docker exec -it craypc-generators /bin/sh -c "export DEBUG=$DEBUG && $cmd"
+docker exec craypc-generators /bin/sh -c "export DEBUG=$DEBUG && $cmd"
