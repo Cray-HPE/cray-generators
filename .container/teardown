@@ -11,9 +11,11 @@ if [ ! -z "$(docker ps -a --filter name=^craypc\-generators-swagger-codegen-cli$
 fi
 
 cd "$this_dir/../"
-existing_bridge=$(docker network ls --filter name=^craypc\-generators$ --quiet)
-if [ ! -z "$existing_bridge" ]; then
-  docker network rm craypc-generators
+existing_bridges=$(docker network ls --filter name=^craypc\-generators$ --quiet)
+if [ ! -z "$existing_bridges" ]; then
+  for existing_bridge in $existing_bridges; do
+    docker network rm $existing_bridge
+  done
 fi
 
 if [[ "$1" == "images" ]]; then
