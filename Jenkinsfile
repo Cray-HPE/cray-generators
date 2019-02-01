@@ -6,6 +6,12 @@ pipeline {
 
   stages {
 
+    stage('Prep') {
+      steps {
+        sh './.container/teardown images'
+      }
+    }
+
     stage('Lint and Test') {
       steps {
         // TODO: we'll want to publish coverage reports
