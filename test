@@ -3,10 +3,15 @@
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd $this_dir
 
+tty_flag=""
+if [[ "$1" == "tty" ]]; then
+  tty_flag="-t "
+  shift
+fi
 cmd="npm run test"
 if [[ ! -z "$@" ]]; then
   cmd="npm run testcustom -- $@"
 fi
 
 ./.container/build-and-start
-docker exec craypc-generators /bin/sh -c "export DEBUG=$DEBUG && $cmd"
+docker exec ${tty_flag}craypc-generators /bin/sh -c "export DEBUG=$DEBUG && $cmd"
