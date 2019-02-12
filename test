@@ -14,4 +14,4 @@ if [[ ! -z "$@" ]]; then
 fi
 
 ./.container/build-and-start
-docker exec ${tty_flag}craypc-generators /bin/sh -c "export DEBUG=$DEBUG && whoami"
+docker exec ${tty_flag}craypc-generators /bin/sh -c "export DEBUG=$DEBUG && ls -la /opt/cray-generators"
