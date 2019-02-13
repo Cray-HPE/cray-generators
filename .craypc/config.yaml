@@ -1,0 +1,16 @@
+---
+# Published commands
+commands:
+  - usage: "generate [GENERATOR] [--sections=SECTIONS] [-h,--help]"
+    help: |
+      GENERATOR
+          name of the generator to run, options are
+              cray-generator (generate a new generator)
+              cray-service (generate resources for your service/API project and submit a PR)
+
+      --sections=SECTIONS
+          comma-delimited list, limit the run to generate stuff for these sections only
+          generator cray-service sections    = service (api codegen, etc.), kubernetes (helm charts, etc.)
+          generator cray-generator sections  = N/A
+    command: "yo --no-insight $@"
+

@@ -31,7 +31,15 @@ The above will kick off a process that will ask you some questions to generate w
 craypc generators generate help
 ```
 
-## Developing New Generators
+## Development on the Project
+
+Requirements:
+
+* Git >= 2.9
+
+After cloning this repo locally to your machine, you'll want to initialize
+
+## Starting New Generators
 
 You'll want a local clone for this, then you can run the generate command from the clone:
 
