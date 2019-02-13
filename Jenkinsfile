@@ -6,10 +6,12 @@ pipeline {
 
   stages {
 
-    stage('Prep') {
+    stage('Init') {
       steps {
-        sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v || true'
-        sh 'docker-compose -f ./.craypc/docker-compose.yaml up -d --build'
+        sh './.craypc/jenkins-init.sh'
+        // No build agents with compose yet
+        // sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v || true'
+        // sh 'docker-compose -f ./.craypc/docker-compose.yaml up -d --build'
       }
     }
 
@@ -29,7 +31,9 @@ pipeline {
 
     stage('Cleanup') {
       steps {
-        sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v'
+        sh './.craypc/jenkins-teardown.sh'
+        // No build agents with compose yet
+        // sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v'
       }
     }
 
