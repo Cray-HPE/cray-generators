@@ -8,6 +8,7 @@ pipeline {
 
     stage('Init') {
       steps {
+        sh './.craypc/jenkins-teardown.sh'
         sh './.craypc/jenkins-init.sh'
         // No build agents with compose yet
         // sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v || true'
