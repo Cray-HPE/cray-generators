@@ -17,10 +17,10 @@ cray-service:
           port: <%= servicePort %>
       livenessProbe:
         port: <%= servicePort %>
-        path: "<%= serviceBasePath %>"
+        path: "<%= serviceBasePath %>/versions"
       readinessProbe:
         port: <%= servicePort %>
-        path: "<%= serviceBasePath %>"
+        path: "<%= serviceBasePath %>/versions"
       volumeMounts: [] # a standard container spec volumeMount list
 
   volumes: [] # a standard container spec volume list
