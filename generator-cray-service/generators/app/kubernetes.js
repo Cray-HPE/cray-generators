@@ -16,11 +16,27 @@ module.exports = class extends CrayGeneratorSection {
         default: false,
       },
       {
+        when: (response) => {
+          return !response.isDaemon
+        },
         type: 'confirm',
-        name: 'hasPersistentData',
-        message: 'Does your service rely on persistent data?',
+        name: 'isStateful',
+        message: 'Does your service require any of the following: (1) stable, unique network identifiers (2) stable, persistent storage ' +
+                 '(3) ordered, graceful deployment and scaling (4) order, automated rolling updates (if you\'re unsure, just answer No)?',
         default: false,
-      }
+      },
+      {
+        type: 'confirm',
+        name: 'requiresEtcdCluster',
+        message: 'Does your service need its own etcd cluster?',
+        default: false,
+      },
+      {
+        type: 'confirm',
+        name: 'requiresSqlCluster',
+        message: 'Does your service need its own highly-available SQL cluster?',
+        default: false,
+      },
     ]
   }
 
@@ -28,7 +44,7 @@ module.exports = class extends CrayGeneratorSection {
     this.generator.responses.kubernetesType = 'Deployment'
     if (this.generator.responses.isDaemon) {
       this.generator.responses.kubernetesType = 'DaemonSet'
-    } else if (this.generator.responses.hasPersistentData) {
+    } else if (this.generator.responses.isStateful) {
       this.generator.responses.kubernetesType = 'StatefulSet'
     }
     this.generator._writeTemplate('kubernetes/Chart.yaml')

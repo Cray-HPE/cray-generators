@@ -16,7 +16,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app
 
 # The server uses this port by default.
-EXPOSE 8080
+EXPOSE <%= servicePort %>
 
 # The command to run.
 ENTRYPOINT ["python3"]

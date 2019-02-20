@@ -48,6 +48,12 @@ module.exports = class extends CrayGenerator {
     )
     let prompts = [
       {
+        validate: (inputValue) => {
+          if (!inputValue.match(/^https:\/\/stash.us.cray.com/)) {
+            return 'Your repository should be in the https form like https://stash.us.cray.com/...'
+          }
+          return true
+        },
         type: 'input',
         name: 'repoUrl',
         message: 'What\'s the *https* (not ssh) URL to the service BitBucket/Stash repo?',
@@ -64,15 +70,24 @@ module.exports = class extends CrayGenerator {
       },
       {
         type: 'confirm',
-        name: 'isApi',
-        message: 'Will your service expose a RESTful API?',
-        default: true,
-      },
-      {
-        type: 'confirm',
         name: 'hasWebFrontend',
         message: 'Will your service expose a web frontend?',
         default: false,
+      },
+      {
+        when: (response) => {
+          return !response.hasWebFrontend
+        },
+        type: 'confirm',
+        name: 'requiresExternalAccess',
+        message: 'Will your service need to be accesible from outside of a Cray?',
+        default: false,
+      },
+      {
+        type: 'input',
+        name: 'servicePort',
+        message: 'On what port will your service listen for requests?',
+        default: '8080',
       },
     ]
     prompts = prompts.concat(this.sections.service.prompts())
@@ -80,6 +95,14 @@ module.exports = class extends CrayGenerator {
     prompts = prompts.concat(this.sections.cli.prompts())
 
     return this.prompt(prompts).then(responses => {
+      responses.serviceBasePath     = '/apis/v1'
+      responses.servicePathsPrefix  = ''
+      if (responses.hasWebFrontend) {
+        // with a web frontend, external access is assumed
+        responses.requiresExternalAccess  = true
+        responses.servicePathsPrefix      = responses.serviceBasePath
+        responses.serviceBasePath         = '/'
+      }
       this.responses = responses
     })
   }

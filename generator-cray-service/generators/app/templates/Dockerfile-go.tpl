@@ -19,6 +19,6 @@ RUN go get github.com/jessevdk/go-flags
 # Build service
 RUN go build ./cmd/golang-microservice-server
 
-# Run sample app service exposing port 8083
-CMD ["./golang-microservice-server", "--scheme=http", "--port=8083", "--host=0.0.0.0"]
-EXPOSE 8083
+# Run sample app service exposing port <%= servicePort %>
+CMD ["./golang-microservice-server", "--scheme=http", "--port=<%= servicePort %>", "--host=0.0.0.0"]
+EXPOSE <%= servicePort %>

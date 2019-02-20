@@ -19,6 +19,7 @@ if [ -z "$(docker ps -a --filter name=^craypc\-generators$ --quiet)" ]; then
   docker run --network craypc-generators -d --name craypc-generators \
     -v "${CRAYPC_VOLUME:-cray-generators}:/opt/cray-generators" \
     -v "/opt/cray-generators/node_modules" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
     craypc/generators:latest tail -f /dev/null
 fi
 

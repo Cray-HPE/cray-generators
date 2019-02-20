@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
-  "host": "<%= serviceName %>",
-  "basePath": "/apis/<%= serviceName.replace(/^cray\\-/, '') %>/v1",
+  "host": "<%= serviceName %>:<%= servicePort %>",
+  "basePath": "<%= serviceBasePath %>",
   "info": {
     "title": "<%= serviceName %>",
     "description": "OpenAPI for <%= serviceName %>",
@@ -9,7 +9,7 @@
   },
   "paths": {
     <% if (hasWebFrontend) { %>
-    "/": {
+    "<%= servicePathsPrefix %>/": {
       "get": {
         "summary": "Web Frontend",
         "tags": [
@@ -26,7 +26,7 @@
       }
     },
     <% } %>
-    "/versions": {
+    "<%= servicePathsPrefix %>/versions": {
       "get": {
         "summary": "Returns supported versions",
         "tags": [
@@ -45,7 +45,7 @@
         }
       }
     },
-    "/items": {
+    "<%= servicePathsPrefix %>/items": {
       "get": {
         "summary": "List items",
         "tags": [
@@ -97,7 +97,7 @@
         }
       }
     },
-    "/items/{id}": {
+    "<%= servicePathsPrefix %>/items/{id}": {
       "parameters": [
         {
           "in": "path",
