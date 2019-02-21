@@ -36,6 +36,7 @@ craypc generators generate help
 Requirements:
 
 * Git >= 2.9
+* ['yq'](https://github.com/mikefarah/yq) (not to be confused with Python's yq)
 
 After cloning this repo locally to your machine, you'll want to initialize
 
