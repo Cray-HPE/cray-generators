@@ -1,9 +1,11 @@
 # Generators for Cray Projects
 
-To run generators, there are really only two local machine requirements:
+To run generators, there are three local machine requirements:
 
 * A *nix system
 * [Docker installed](https://docs.docker.com/install/)
+* [yq](https://github.com/mikefarah/yq) (not to be confused with Python's yq)
+
 
 The recommended way to run generators from your machine is using the [`craypc`](https://stash.us.cray.com/projects/CLOUD/repos/craypc/browse) tool:
 
@@ -36,7 +38,6 @@ craypc generators generate help
 Requirements:
 
 * Git >= 2.9
-* [yq](https://github.com/mikefarah/yq) (not to be confused with Python's yq)
 
 After cloning this repo locally to your machine, you'll want to initialize
 
