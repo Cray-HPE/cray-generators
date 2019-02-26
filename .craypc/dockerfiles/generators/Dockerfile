@@ -27,7 +27,7 @@ LABEL "stash.branch"="feature/proper-craypc-integration"
 # any additional containers that need to be pulled
 LABEL "registry.containers"="generators-swagger-codegen-cli"
 
-VOLUME [ "/opt-cray-generators" ]
+VOLUME [ "/opt/cray-generators" ]
 WORKDIR /opt/cray-generators
 USER node
 CMD [ "/bin/sh" ]
