@@ -20,6 +20,13 @@ RUN chown -R node:node /opt/cray-generators
 ######## craypc-generators #########
 FROM dependencies as craypc-generators
 
+# Used by craypc to download/use additional stable assets from the master branch of the repo
+LABEL "stash.project"="CLOUD"
+LABEL "stash.repo"="cray-generators"
+LABEL "stash.branch"="feature/proper-craypc-integration"
+# any additional containers that need to be pulled
+LABEL "registry.containers"="generators-swagger-codegen-cli"
+
 VOLUME [ "/opt-cray-generators" ]
 WORKDIR /opt/cray-generators
 USER node

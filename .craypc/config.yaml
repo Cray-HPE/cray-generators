@@ -11,7 +11,7 @@ commands:
 
       --sections=SECTIONS
           comma-delimited list, limit the run to generate stuff for these sections only
-          generator cray-service sections    = service (api codegen, etc.), kubernetes (helm charts, etc.)
+          generator cray-service sections    = service (api codegen, etc.), kubernetes (helm charts, etc.), cli (cli integration automation)
           generator cray-generator sections  = N/A
     container: "craypc-generators"
     command: "yo --no-insight $@"

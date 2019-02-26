@@ -2,7 +2,7 @@ version: '3'
 services:
   generators:
     container_name: craypc-generators
-    image: dtr.dev.cray.com/pforce/generators:0.2.0 # TODO: change to dtr.dev.cray.com/craypc/generators:... when craypc pipeline is in place
+    image: dtr.dev.cray.com/pforce/generators:${IMAGE_TAG:-0.2.0} # TODO: change to dtr.dev.cray.com/craypc/generators:... when craypc pipeline is in place
     user: node
     command: "tail -f /dev/null"
     build:
@@ -16,7 +16,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
   generators-swagger-codegen-cli:
     container_name: craypc-generators-swagger-codegen-cli
-    image: dtr.dev.cray.com/pforce/generators-swagger-codegen-cli:2.4.1 # TODO: change to dtr.dev.cray.com/craypc/generators-swagger-codegen-cli:... when craypc pipeline is in place
+    image: dtr.dev.cray.com/pforce/generators-swagger-codegen-cli:${IMAGE_TAG:-2.4.0} # TODO: change to dtr.dev.cray.com/craypc/generators-swagger-codegen-cli:... when craypc pipeline is in place
     command: "tail -f /dev/null"
     build:
       context: ../
