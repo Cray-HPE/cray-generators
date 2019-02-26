@@ -3,9 +3,7 @@
 To run generators, there are three local machine requirements:
 
 * A *nix system
-* [Docker installed](https://docs.docker.com/install/)
-* [yq](https://github.com/mikefarah/yq) (not to be confused with Python's yq)
-
+* [Docker installed](https://docs.docker.com/install/) (w/ `docker-compose` client)
 
 The recommended way to run generators from your machine is using the [`craypc`](https://stash.us.cray.com/projects/CLOUD/repos/craypc/browse) tool:
 
