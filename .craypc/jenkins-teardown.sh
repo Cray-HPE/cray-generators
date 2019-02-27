@@ -4,7 +4,7 @@
 
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-uid="$1"
+uid=$(echo $1 | md5sum)
 
 docker rm -f cpcgen-$uid || true
 docker rm -f cpcgen-cg-$uid || true
