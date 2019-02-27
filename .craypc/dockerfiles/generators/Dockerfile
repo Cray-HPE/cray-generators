@@ -23,7 +23,7 @@ FROM dependencies as craypc-generators
 # Used by craypc to download/use additional stable assets from the master branch of the repo
 LABEL "stash.project"="CLOUD"
 LABEL "stash.repo"="cray-generators"
-LABEL "stash.branch"="feature/proper-craypc-integration"
+LABEL "stash.branch"="master"
 # any additional containers that need to be pulled
 LABEL "registry.containers"="generators-swagger-codegen-cli"
 
