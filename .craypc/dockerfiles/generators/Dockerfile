@@ -21,6 +21,9 @@ RUN chown -R node:node /opt/cray-generators
 FROM dependencies as craypc-generators
 
 # Used by craypc to download/use additional stable assets from the master branch of the repo
+# TODO: we're going to work towards a model where artifacts will be published to expected locations,
+#       but the below is how we'll ensure that craypc can put the pieces together of where to clone
+#       the relevant repo and pull in the resources needed other than container images
 LABEL "stash.project"="CLOUD"
 LABEL "stash.repo"="cray-generators"
 LABEL "stash.branch"="master"
