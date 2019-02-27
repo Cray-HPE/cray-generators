@@ -2,7 +2,7 @@ version: '3'
 services:
   generators:
     container_name: craypc-generators
-    image: craypc/generators:0.2.0
+    image: ${CRAYPC_IMAGE_REPO}/generators:${CRAYPC_IMAGE_TAG}
     user: node
     command: "tail -f /dev/null"
     build:
@@ -11,12 +11,12 @@ services:
     networks:
       - craypc-generators
     volumes:
-      - ${CRAYPC_VOLUME:-cray-generators}:/opt/cray-generators
+      - ${CRAYPC_LOCAL_PROJECT_PATH}:/opt/cray-generators
       - /opt/cray-generators/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
   generators-swagger-codegen-cli:
     container_name: craypc-generators-swagger-codegen-cli
-    image: craypc/generators:2.4.1
+    image: ${CRAYPC_IMAGE_REPO}/generators-swagger-codegen-cli:${CRAYPC_IMAGE_TAG}
     command: "tail -f /dev/null"
     build:
       context: ../
@@ -24,7 +24,7 @@ services:
     networks:
       - craypc-generators
     volumes:
-      - ${CRAYPC_VOLUME:-cray-generators}:/opt/cray-generators
+      - ${CRAYPC_LOCAL_PROJECT_PATH}:/opt/cray-generators
 networks:
   craypc-generators:
     driver: bridge
