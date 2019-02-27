@@ -113,6 +113,7 @@ module.exports = class extends CrayGeneratorSection {
       this.generator._writeTemplate(this.generator.props.swagger.specFilePath)
       this.generator._writeFiles(() => {})
     }
+    const cogegenContainerName = process.env.CRAY_GENERATOR_SWAGGER_CODEGEN_CONTAINER || 'craypc-generators-swagger-codegen-cli'
     this.generator._writeTemplate('Jenkinsfile')
     this.generator._writeTemplate('.version')
     this.generator._writeTemplate('runBuildPrep.sh')
@@ -121,7 +122,7 @@ module.exports = class extends CrayGeneratorSection {
     this.generator._writeTemplate('runPostBuild.sh')
     this.generator._writeTemplate('runUnitTest.sh')
     if (this.generator.props.swagger.runCodegen) {
-      return this.generator.shell.exec('docker', ['exec', 'craypc-generators-swagger-codegen-cli',
+      return this.generator.shell.exec('docker', ['exec', cogegenContainerName,
         'java', '-jar', '/opt/swagger-codegen-cli/swagger-codegen-cli.jar',
         'generate', '-i', `${this.generator.props.repoPath}/${this.generator.props.swagger.specFilePath}`, '-l',
         this.swaggerTypes[this.generator.responses.language], '-o', `${this.generator.props.repoPath}/`

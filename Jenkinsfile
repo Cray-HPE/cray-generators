@@ -20,14 +20,14 @@ pipeline {
     stage('Lint and Test') {
       steps {
         // TODO: we'll want to publish coverage reports
-        sh 'docker exec craypc-generators npm run test'
+        sh "docker exec cpcgen-${uid} npm run test"
       }
     }
 
     stage('Build') {
       steps {
         // TODO: we'll want a destination for the built docs
-        sh 'docker exec craypc-generators npm run build'
+        sh "docker exec cpcgen-${uid} npm run build"
       }
     }
 

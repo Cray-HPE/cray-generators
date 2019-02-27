@@ -14,6 +14,7 @@ docker rm $(docker ps -a --filter name=^cpcgen\- --filter status=exited --quiet)
 
 docker build -f .craypc/dockerfiles/generators/Dockerfile -t craypc/generators:$uid .
 docker run --network cpcgen-$uid -d --name cpcgen-$uid \
+    -e CRAY_GENERATOR_SWAGGER_CODEGEN_CONTAINER="cpcgen-cg-$uid" \
     -v "cray-generators:/opt/cray-generators" \
     -v "/opt/cray-generators/node_modules" \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -21,5 +22,5 @@ docker run --network cpcgen-$uid -d --name cpcgen-$uid \
 
 docker build -f .craypc/dockerfiles/generators-swagger-codegen-cli/Dockerfile -t craypc/generators-swagger-codegen-cli:$uid .
 docker run --network cpcgen-$uid -d --name cpcgen-cg-$uid \
-  -v "${CRAYPC_VOLUME:-cray-generators}:/opt/cray-generators" \
-  craypc/generators-swagger-codegen-cli:latest tail -f /dev/null
+  -v "cray-generators:/opt/cray-generators" \
+  craypc/generators-swagger-codegen-cli:$uid tail -f /dev/null
