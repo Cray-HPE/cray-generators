@@ -8,7 +8,7 @@ if [ ! -z "$(docker ps -a --filter name=^craypc\-generators$ --quiet)" ]; then
   docker rm -f craypc-generators
 fi
 
-if [ ! -z "$(docker ps -a --filter name=^craypc\-generators-swagger-codegen-cli$ --quiet)" ]; then
+if [ ! -z "$(docker ps -a --filter name=^craypc\-generators\-swagger\-codegen\-cli$ --quiet)" ]; then
   docker rm -f craypc-generators-swagger-codegen-cli
 fi
 
