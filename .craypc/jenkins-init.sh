@@ -4,7 +4,7 @@
 
 this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-uid=$(echo $1 | md5sum)
+uid="$1"
 
 cd "$this_dir/../"
 docker network create -d bridge cpcgen-$uid

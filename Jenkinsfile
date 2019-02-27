@@ -1,3 +1,5 @@
+def uid = UUID.randomUUID().toString().split('-')[0]
+
 pipeline {
 
   agent {
@@ -8,7 +10,7 @@ pipeline {
 
     stage('Init') {
       steps {
-        sh "./.craypc/jenkins-init.sh ${env.BUILD_TAG}"
+        sh "./.craypc/jenkins-init.sh ${uid}"
         // No build agents with compose yet
         // sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v || true'
         // sh 'docker-compose -f ./.craypc/docker-compose.yaml up -d --build'
@@ -31,7 +33,7 @@ pipeline {
 
     stage('Cleanup') {
       steps {
-        sh "./.craypc/jenkins-teardown.sh ${env.BUILD_TAG}"
+        sh "./.craypc/jenkins-teardown.sh ${uid}"
         // No build agents with compose yet
         // sh 'docker-compose -f ./.craypc/docker-compose.yaml down -v'
       }
