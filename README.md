@@ -31,14 +31,14 @@ craypc generators generate help
 
 ## Developing
 
-## Working with the generators here
+### Working with the generators here
 
 See each of the individual generator directories for more info on working with them, developing them:
 
 * [`generator-cray-generator`](generator-cray-generator/): for creating new generators here
 * [`generator-cray-service`](generator-cray-service/): generator for cray services, swagger codegen, helm charts, cli integration, etc.
 
-## Starting New Generators
+### Starting New Generators
 
 You'll want a local clone for this, then run from within the clone:
 
