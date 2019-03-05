@@ -9,7 +9,6 @@ cray-service:
   containers:
     - name: "<%= serviceName %>"
       image:
-        repositoryHostPrefix: "dtr.dev.cray.com/" # this value will always be set on helm install based on install context, this is a reasonable default
         repository: "cray/<%= serviceName %>"
       env: []
       ports:
