@@ -14,8 +14,8 @@ craypc generators help
 
 ### The following generators are available
 
-* **`cray-service`**: if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
-* **`cray-generator`**: A generator for creating a new Cray generator, in an oh-so meta way
+* **[`cray-service`]((generator-cray-service/)**: if you're starting a new project for an internal Cray service/API, or if you need to update an existing service with Cray standard resources
+* **[`cray-generator`](generator-cray-generator/)**: A generator for creating a new Cray generator, in an oh-so meta way
 
 You can run these generators by:
 
