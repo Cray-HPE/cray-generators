@@ -1,5 +1,5 @@
 ---
 dependencies:
   - name: cray-service
-    version: 0.1.0
-    repository: https://charts.dev.cray.com
+    version: 1.0.0
+    repository: "@cray-internal"

@@ -1,5 +1,5 @@
 apiVersion: v1
-appVersion: 0.0.1
+appVersion: 1.0.0
 description: "Kubernetes resources for <%= serviceName %>"
 name: "<%= serviceName %>"
-version: 0.0.1
+version: 1.0.0
