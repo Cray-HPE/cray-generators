@@ -4,25 +4,22 @@
 cray-service:
   type: "<%= kubernetesType %>"
   nameOverride: "<%= serviceName %>"
-  replicaCount: 1
 
   containers:
     - name: "<%= serviceName %>"
       image:
         repository: "cray/<%= serviceName %>"
-      env: []
       ports:
         - name: http
           port: <%= servicePort %>
       livenessProbe:
+        enabled: true
         port: <%= servicePort %>
         path: "<%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>"
       readinessProbe:
+        enabled: true
         port: <%= servicePort %>
         path: "<%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>"
-      volumeMounts: [] # a standard container spec volumeMount list
-
-  volumes: [] # a standard container spec volume list
 
   <% if (requiresExternalAccess) { %>
   ingress:
@@ -34,5 +31,6 @@ cray-service:
   <% } %>
   <% if (requiresSqlCluster) { %>
   sqlCluster:
+    shared: false
     enabled: true
   <% } %>
