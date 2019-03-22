@@ -47,13 +47,38 @@ module.exports = class extends CrayGeneratorSection {
     } else if (this.generator.responses.isStateful) {
       this.generator.responses.kubernetesType = 'StatefulSet'
     }
-    this.generator._writeTemplate('kubernetes/Chart.yaml')
-    this.generator._writeTemplate('kubernetes/values.yaml')
-    this.generator._writeTemplate('kubernetes/requirements.yaml')
-    this.generator._writeTemplate('kubernetes/README.md')
-    this.generator._writeTemplate('kubernetes/.gitignore')
-    this.generator._writeTemplate('kubernetes/templates/_helpers.tpl')
-    this.generator._writeTemplate('kubernetes/templates/NOTES.txt')
+    this.generator._writeTemplate(
+      'kubernetes/README-root.md',
+      this.generator.destinationPath('kubernetes/README.md')
+    )
+    this.generator._writeTemplate(
+      'kubernetes/Chart.yaml',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/Chart.yaml`)
+    )
+    this.generator._writeTemplate(
+      'kubernetes/values.yaml',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/values.yaml`)
+    )
+    this.generator._writeTemplate(
+      'kubernetes/requirements.yaml',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/requirements.yaml`)
+    )
+    this.generator._writeTemplate(
+      'kubernetes/README.md',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/README.md`)
+    )
+    this.generator._writeTemplate(
+      'kubernetes/.gitignore',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/.gitignore`)
+    )
+    this.generator._writeTemplate(
+      'kubernetes/templates/_helpers.tpl',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/templates/_helpers.tpl`)
+    )
+    this.generator._writeTemplate(
+      'kubernetes/templates/NOTES.txt',
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/templates/NOTES.txt`)
+    )
   }
 
 }
