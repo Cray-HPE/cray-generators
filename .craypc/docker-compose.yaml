@@ -25,7 +25,6 @@ services:
       - craypc-generators
     volumes:
       - ${CRAYPC_LOCAL_PROJECT_PATH}:/opt/cray-generators
-      - /var/run/docker.sock:/var/run/docker.sock
 networks:
   craypc-generators:
     driver: bridge
