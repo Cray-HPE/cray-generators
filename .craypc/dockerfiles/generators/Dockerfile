@@ -17,6 +17,9 @@ ENV PATH /opt/node_modules/.bin:$PATH
 ENV NODE_PATH /opt/cray-generators:/opt/node_modules
 RUN chown -R node:node /opt/cray-generators
 
+# the node user needs access to the mounted docker.sock
+RUN sed -i 's|root:x:0:root|root:x:0:root,node|g' /etc/group
+
 ######## craypc-generators #########
 FROM dependencies as craypc-generators
 
