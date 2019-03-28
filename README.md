@@ -9,7 +9,17 @@ Local machine requirements:
 Once `craypc` is installed, you can get further help:
 
 ```
+# Things move fast.  Help is always more up to date than the readme
+# Usage and help for the generators cli tool
 craypc generators help
+
+# Did you try help first?
+craypc generators generate cray-service --sections=kubernetes # answer some questions and get a pull request with a new helm chart
+craypc generators generate cray-service --sections=service # answer some questions and get a pull request with a new api codegen-ed just for you
+craypc generators generate cray-service --sections=cli # answer some questions and get a pull request for cli integration
+
+# learn more about craypc itself, see it's usage and help
+craypc --help
 ```
 
 ### The following generators are available
