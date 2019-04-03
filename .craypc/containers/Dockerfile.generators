@@ -1,0 +1,39 @@
+######## base ########
+FROM node:10-alpine AS base
+
+RUN apk add --no-cache git docker
+
+####### dependencies ########
+FROM base AS dependencies
+
+RUN mkdir /opt/cray-generators
+COPY ./package.json /opt/package.json
+COPY . /opt/cray-generators
+WORKDIR /opt
+RUN npm install --no-package-lock
+COPY ./.craypc/containers/links.sh /usr/local/bin/links.sh
+RUN chmod +x /usr/local/bin/links.sh && /usr/local/bin/links.sh
+ENV PATH /opt/node_modules/.bin:$PATH
+ENV NODE_PATH /opt/cray-generators:/opt/node_modules
+RUN chown -R node:node /opt/cray-generators
+
+# the node user needs access to the mounted docker.sock
+RUN sed -i 's|root:x:0:root|root:x:0:root,node|g' /etc/group
+
+######## tests #########
+FROM dependencies as tests
+
+WORKDIR /opt/cray-generators
+RUN npm run test
+
+######## generators #########
+FROM dependencies as generators
+
+COPY ./.craypc/containers/generators-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+RUN chown node:node /entrypoint.sh
+
+VOLUME [ "/opt/cray-generators" ]
+WORKDIR /opt/cray-generators
+USER node
+CMD [ "/bin/sh" ]

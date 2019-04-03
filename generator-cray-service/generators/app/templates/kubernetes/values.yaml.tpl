@@ -1,4 +1,4 @@
-# Please see stable/cray-service/values.yaml (https://stash.us.cray.com/projects/CLOUD/repos/cray-charts/browse)
+# Please https://stash.us.cray.com/projects/CLOUD/repos/cray-charts/browse/stable/cray-service/values.yaml?at=refs%2Fheads%2Fmaster
 # for more info on values you can set/override
 
 cray-service:

@@ -3,3 +3,4 @@ jsdocs/
 coverage/
 .craypc/
 !.craypc/**/links.sh
+!.craypc/**/generators-entrypoint.sh

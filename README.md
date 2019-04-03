@@ -58,3 +58,15 @@ craypc local generate cray-generator
 
 Run the above, it'll ask you some questions, and then create a new named generator directory here. You can then begin development on the generator itself locally. Refer to the README in the newly-created generator for more info on developing it out.
 
+### Releasing for `craypc`
+
+Make necessary changes, increment version in:
+
+1. relevant package.json files, depending on what changed
+2. `.craypc/config.yaml`
+
+```
+# this method will go away when we roll things into the DST pipeline appropriately
+craypc local publish
+```
+

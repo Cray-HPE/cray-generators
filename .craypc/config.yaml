@@ -1,18 +1,47 @@
+{{- $volume := "craypc-generators" -}}
+{{- if eq .Project "local" -}}
+{{- $volume = .Cwd -}}
+{{- end -}}
 ---
-# Published commands
-commands:
-  - entrypoint: generate
-    usage: "generate [GENERATOR] [--sections=SECTIONS] [-h,--help]"
-    help: |
-      GENERATOR
-          name of the generator to run, options are
-              cray-generator (generate a new generator)
-              cray-service (generate resources for your service/API project and submit a PR)
-
-      --sections=SECTIONS
-          comma-delimited list, limit the run to generate stuff for these sections only
-          generator cray-service sections    = service (api codegen, etc.), kubernetes (helm charts, etc.), cli (cli integration automation)
-          generator cray-generator sections  = N/A
-    container: "craypc-generators"
-    command: "yo --no-insight $@"
+version: "1.0.6"
+exec:
+  container: craypc-generators
+  interactive: true
+  command: "/entrypoint.sh {{ .Arguments }}"
+  multiuse: true
+docker-compose:
+  version: "3.3"
+  services:
+    generators:
+      container_name: craypc-generators
+      image: "{{ .ImagesRepo }}/generators:{{ .Version }}"
+      command: "tail -f /dev/null"
+      build:
+        context: ../../
+        dockerfile: .craypc/containers/Dockerfile.generators
+        labels:
+          craypc.config: "{{ .ConfigHash }}"
+      networks:
+        - craypc-generators
+      volumes:
+        - "{{ $volume }}:/opt/cray-generators"
+        - /opt/cray-generators/node_modules
+        - /var/run/docker.sock:/var/run/docker.sock
+    generators-swagger-codegen-cli:
+      container_name: craypc-generators-swagger-codegen-cli
+      image: "{{ .ImagesRepo }}/generators-swagger-codegen-cli:{{ .Version }}"
+      command: "tail -f /dev/null"
+      build:
+        context: ../../
+        dockerfile: .craypc/containers/Dockerfile.swagger-codegen-cli
+      networks:
+        - craypc-generators
+      volumes:
+        - "{{ $volume }}:/opt/cray-generators"
+  networks:
+    craypc-generators:
+      driver: bridge
+  volumes:
+    craypc-generators:
+      driver: local
 
