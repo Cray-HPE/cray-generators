@@ -10,7 +10,7 @@ describe('generator-cray-generator:app', () => {
   const generatorDescription  = 'A test generator'
   const contributorName       = 'Automated Tests'
   const contributorEmail      = 'tests@cray.com'
-  
+
   const createGenerator = (name = null) => {
     return helpers
       .run(path.resolve(__dirname, '..', 'generators', 'app'))

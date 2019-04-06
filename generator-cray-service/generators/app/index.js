@@ -3,7 +3,8 @@ const Git               = require('lib/git')
 const ServiceSection    = require('./service')
 const KubernetesSection = require('./kubernetes')
 const CliSection        = require('./cli')
-const falsey            = require('falsey')
+const path              = require('path')
+const defaultRoot       = path.resolve(__dirname, '..', '..', '.tmp')
 
 /**
  * Generator for a Cray service/API, with support for generating new services or updating existing ones with standard Cray resources.
@@ -17,22 +18,24 @@ module.exports = class extends CrayGenerator {
   constructor (args, opts) {
     super(args, opts)
     this.option('push', {
-      type: String,
-      default: 'yes',
+      type: Boolean,
+      default: true,
       description: 'whether or not to push changes to the repo',
     })
-    this.option('force-push', {
-      type: String,
-      default: 'no',
-      description: 'whether or not to run the git push as a forced git push',
+    this.option('force', {
+      type: Boolean,
+      default: false,
+      description: 'Generic force flag, for forcing overwriting both local changes and the created branch/PR',
     })
   }
 
   initializing () {
-    this.git            = null
-    this.branch         = 'feature/cray-service-generator-updates'
-    this.rootRepoPath   = '/opt/cray-generators/.tmp'
-    this.sections       = {
+    if (this.options.destinationRoot == '') {
+      this.destinationRoot(defaultRoot)
+    }
+    this.git        = new Git({ logger: this.log })
+    this.branch     = 'feature/cray-service-generator-updates'
+    this.sections   = {
       service:    new ServiceSection(this, 'service'),
       kubernetes: new KubernetesSection(this, 'kubernetes'),
       cli:        new CliSection(this, 'cli'),
@@ -48,15 +51,11 @@ module.exports = class extends CrayGenerator {
     )
     let prompts = [
       {
-        validate: (inputValue) => {
-          if (!inputValue.match(/^https:\/\/stash.us.cray.com/)) {
-            return 'Your repository should be in the https form like https://stash.us.cray.com/...'
-          }
-          return true
-        },
+        filter: this.git.getRepoHttpsCloneUrl.bind(this.git),
+        validate: this.git.validateRepoHttpsCloneUrl.bind(this.git),
         type: 'input',
         name: 'repoUrl',
-        message: 'What\'s the *https* (not ssh) URL to the service BitBucket/Stash repo?',
+        message: 'What\'s the clone URL of the BitBucket/Stash repo for your service?',
       },
       {
         type: 'input',
@@ -113,7 +112,6 @@ module.exports = class extends CrayGenerator {
     if (this.fse.existsSync(this.props.repoPath)) {
       this.fse.removeSync(this.props.repoPath)
     }
-    this.git = new Git({ logger: this.log })
     return this.git.configure(
       this.responses.repoUsername,
       this.responses.repoPassword,
@@ -141,20 +139,29 @@ module.exports = class extends CrayGenerator {
   }
 
   install () {
-    if (falsey(this.options.push)) {
+    if (!this.options.push) {
       this.notify('Not committing/pushing changes because the push option was set to off')
     } else {
       const commitMessage = 'cray-service generator updates'
-      const forcePush     = !falsey(this.options['force-push'])
-      return this.git.commitAndPush(this.props.repoPath, commitMessage, { force: forcePush, openPullRequest: true }).then((result) => {
+      return this.git.commitAndPush(this.props.repoPath, commitMessage, { force: this.options.force, openPullRequest: true }).then((result) => {
         this._processGitCommitAndPushResult(result, this.responses.repoUrl, this.branch)
         return this.sections.cli.install()
-      }).catch(this.handleError)
+      }).catch((error) => {
+        const errorText = (error.stderr || error.stdout || error)
+        if (errorText.indexOf('rejected') >= 0) {
+          this.handleError(
+            'The git branch push was rejected, likely because the branch already exists in your repo. ' +
+            'You can use the flag --force when running the generator to force push changes made by the generator ' +
+            'to the branch.'
+          )
+        } else {
+          this.handleError(error)
+        }
+      })
     }
   }
 
   end () {
-    this.fse.removeSync(this.props.repoPath)
     this.sections.cli.end()
     this.notify('One final note, after creating a new service or updating an existing one, please refer to ' +
                 'the generator-cray-service/README.md for further guidance on Cray standards and other ' +
@@ -193,7 +200,7 @@ module.exports = class extends CrayGenerator {
    * @returns {string}
    */
   _getRepoPath (repoUrl) {
-    return `${this.rootRepoPath}/${this._getServiceName(repoUrl)}`
+    return `${this.destinationRoot()}/${this._getServiceName(repoUrl)}`
   }
 
 }

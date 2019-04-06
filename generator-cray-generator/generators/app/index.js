@@ -1,15 +1,22 @@
 const CrayGenerator = require('lib/cray-generator')
 const path          = require('path')
+const defaultRoot   = path.resolve(__dirname, '..', '..', '..')
 
 /**
  * Generator for generators.
  * <br/></br/>
- * See the source linked below and the <a href="https://yeoman.io/authoring/index.html">Yeoman generator authoring docs</a> for more info. 
+ * See the source linked below and the <a href="https://yeoman.io/authoring/index.html">Yeoman generator authoring docs</a> for more info.
  * @type CrayGenerator
  * @name cray-generator:app
  */
 module.exports = class extends CrayGenerator {
-  
+
+  initializing() {
+    if (this.options.destinationRoot == '') {
+      this.destinationRoot(defaultRoot)
+    }
+  }
+
   prompting () {
     this.notify(`This is the ${this.chalk.cyan('Cray generator, um...generator')}. ` +
                 'You can use this generator to start creating your own generator. Phew.')
@@ -49,7 +56,7 @@ module.exports = class extends CrayGenerator {
   }
 
   writing () {
-    const pkg         = this.fs.readJSON(path.resolve(this.projectRoot, 'generator-cray-generator', 'package.json'))
+    const pkg         = this.fs.readJSON(path.resolve(defaultRoot, 'generator-cray-generator', 'package.json'))
     pkg.name          = this.props.generatorName
     pkg.description   = this.props.generatorDescription
     pkg.version       = '0.0.1'
@@ -61,12 +68,12 @@ module.exports = class extends CrayGenerator {
     this.fs.writeJSON(this.destinationPath(`${this.props.generatorName}/package.json`), pkg)
 
     this.fs.copyTpl(
-      this.templatePath('app.index.js.tpl'), 
+      this.templatePath('app.index.js.tpl'),
       this.destinationPath(`${this.props.generatorName}/generators/app/index.js`),
       this.props
     )
     this.fs.copyTpl(
-      this.templatePath('README.md.tpl'), 
+      this.templatePath('README.md.tpl'),
       this.destinationPath(`${this.props.generatorName}/README.md`),
       this.props
     )
@@ -80,7 +87,7 @@ module.exports = class extends CrayGenerator {
       this.destinationPath(`${this.props.generatorName}/tests/app.test.js`),
       this.props
     )
-    
+
   }
 
   end () {

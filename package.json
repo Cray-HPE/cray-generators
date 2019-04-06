@@ -1,6 +1,6 @@
 {
   "name": "cray-generators",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Various generators for different common project types at Cray",
   "repository": "https://stash.us.cray.com/projects/CLOUD/repos/cray-generators/",
   "homepage": "https://stash.us.cray.com/projects/CLOUD/repos/cray-generators/browse/",
@@ -24,6 +24,7 @@
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "jest --coverage",
+    "testlocal": "NODE_PATH=$(pwd):$(pwd)/node_modules npm run test",
     "builddocs": "jsdoc -d ./jsdocs -r -R README.md -c ./.jsdocconfig.js ./",
     "build": "npm run builddocs"
   },
@@ -34,6 +35,8 @@
     "fs-extra": "^7.0.1",
     "generator-generator": "^4.0.2",
     "request": "2.88.0",
+    "tmp": "^0.1.0",
+    "yaml": "^1.4.0",
     "yeoman-generator": "^3.1.1",
     "yo": "^2.0.5",
     "yosay": "^2.0.2"

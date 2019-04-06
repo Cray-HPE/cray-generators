@@ -15,6 +15,7 @@ function help() {
   echo "                  kubernetes  = generate/update Kubernetes resources, Helm charts in your project"
   echo "                  service     = base codegen and other project bootstrapping resources such as DST Jenkins pipeline files"
   echo "                  cli         = automate integration with the CLI"
+  echo "  --force         Will force overwrite, including the branch and PR created by the generator in your repo"
   echo ""
   echo "Examples:"
   echo "   Add a Helm chart to your service:"
