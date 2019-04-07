@@ -4,6 +4,7 @@ describe('git', () => {
 
   let git           = null
   let shellExecStub = null
+  let requestStub   = null
 
   beforeEach(() => {
     git = new Git()
@@ -20,6 +21,9 @@ describe('git', () => {
   afterEach(() => {
     if (shellExecStub && shellExecStub.mockRestore) {
       shellExecStub.mockRestore()
+    }
+    if (requestStub && requestStub.mockRestore) {
+      requestStub.mockRestore()
     }
   })
 
@@ -154,9 +158,64 @@ describe('git', () => {
   })
 
   it('ensure that openPullRequest() fails with invalid repo url', () => {
+    expect(() => {
+      return git.openPullRequest('invalid-repo-url', 'branch name')
+    }).toThrowError(/Invalid\srepoUrl/g)
+  })
+
+  it('ensure that openPullRequest() works with mocked request stub', () => {
+    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const response = { statusCode: 201 }
+        const body = 'pull request created'
+        const result = callback(null, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
+    expect.assertions(2)
+    return git.openPullRequest('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'master').then((result) => {
+      expect(result.response.statusCode).toEqual(201)
+      expect(result.body).toEqual('pull request created')
+    })
+  })
+
+  it('ensure that openPullRequest() reacts appropriately with request error', () => {
+    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const response = { statusCode: 500 }
+        const body = 'pull request failed'
+        const result = callback(null, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
     expect.assertions(1)
-    return git.openPullRequest('invalid-repo-url', 'branch name').catch((error) => {
-      expect(error.message).toMatch(/Invalid\srepoUrl/g)
+    return git.openPullRequest('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'master').catch((error) => {
+      expect(error).toMatch(/Received\sresponse\scode/g)
+    })
+  })
+
+  it('ensure that openPullRequest() reacts appropriately with internal error', () => {
+    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const error = new Error('FAILURE')
+        const response = null
+        const body = null
+        const result = callback(error, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
+    expect.assertions(1)
+    return git.openPullRequest('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'master').catch((error) => {
+      expect(error.message).toMatch(/FAILURE/g)
     })
   })
 
@@ -199,9 +258,92 @@ describe('git', () => {
   })
 
   it('test fork() fails with invalid url', () => {
+    expect(() => {
+      return git.fork('invalid-repo-url', 'destination project')
+    }).toThrowError(/Invalid\srepoUrl/g)
+  })
+
+  it('ensure that fork() works with mocked request stub', () => {
+    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const response = { statusCode: 201 }
+        const body = 'fork created'
+        const result = callback(null, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
+    expect.assertions(2)
+    return git.fork('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'https://stash.us.cray.com/scm/cloud/cray-repo.git').then((result) => {
+      expect(result.response.statusCode).toEqual(201)
+      expect(result.body).toEqual('fork created')
+    })
+  })
+
+  it('ensure that fork() reacts appropriately with request error', () => {
+    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const response = { statusCode: 500 }
+        const body = 'fork failed'
+        const result = callback(null, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
     expect.assertions(1)
-    return git.fork('invalid-repo-url', 'destination-project').catch((error) => {
-      expect(error.message).toMatch(/Invalid\srepoUrl/g)
+    return git.fork('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'https://stash.us.cray.com/scm/cloud/cray-repo.git').catch((error) => {
+      expect(error).toMatch(/Received\sresponse\scode/g)
+    })
+  })
+
+  it('ensure that fork() reacts appropriately with internal error', () => {
+    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const error = new Error('FAILURE')
+        const response = null
+        const body = null
+        const result = callback(error, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
+    expect.assertions(1)
+    return git.fork('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'https://stash.us.cray.com/scm/cloud/cray-repo.git').catch((error) => {
+      expect(error.message).toMatch(/FAILURE/g)
+    })
+  })
+
+  it('ensure that the request method works to a live remote endpoint, callback forced to say request worked', () => {
+    expect.assertions(1)
+    const requestOptions  = {
+      uri: 'https://httpbin.org',
+      method: 'GET',
+    }
+    expect.assertions(1)
+    return git.request(requestOptions, () => {
+      return true
+    }).then((result) => {
+      expect(result.response.statusCode).toEqual(200)
+    })
+  })
+
+  it('ensure that the request method fails to a non-existent endpoint, callback forced to say request failed', () => {
+    expect.assertions(1)
+    const requestOptions  = {
+      uri: 'http://10.0.0.0.0.0.0.101',
+      method: 'GET',
+    }
+    expect.assertions(1)
+    return git.request(requestOptions, () => {
+      return 'FAILURE'
+    }).catch((error) => {
+      expect(error).toMatch(/FAILURE/)
     })
   })
 
