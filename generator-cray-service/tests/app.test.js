@@ -41,7 +41,7 @@ describe('generator-cray-service:app', () => {
     if (gitCloneStub && gitCloneStub.mockRestore) {
       gitCloneStub.mockRestore()
     }
-    //fs.removeSync(destinationRoot)
+    fs.removeSync(destinationRoot)
   })
 
   const createGenerator = (prompts = {}, options = {}) => {
