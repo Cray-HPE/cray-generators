@@ -69,17 +69,8 @@ module.exports = class extends CrayGenerator {
       },
       {
         type: 'confirm',
-        name: 'hasWebFrontend',
-        message: 'Will your service expose a web frontend?',
-        default: false,
-      },
-      {
-        when: (response) => {
-          return !response.hasWebFrontend
-        },
-        type: 'confirm',
         name: 'requiresExternalAccess',
-        message: 'Will your service need to be accesible from outside of a Cray?',
+        message: 'Will your service need to be accesible from outside of a Cray Kubernetes cluster?',
         default: false,
       },
       {
@@ -96,13 +87,7 @@ module.exports = class extends CrayGenerator {
     return this.prompt(prompts).then(responses => {
       responses.serviceBasePath     = '/apis/v1'
       responses.servicePathsPrefix  = ''
-      if (responses.hasWebFrontend) {
-        // with a web frontend, external access is assumed
-        responses.requiresExternalAccess  = true
-        responses.servicePathsPrefix      = responses.serviceBasePath
-        responses.serviceBasePath         = '/'
-      }
-      this.responses = responses
+      this.responses                = responses
     })
   }
 

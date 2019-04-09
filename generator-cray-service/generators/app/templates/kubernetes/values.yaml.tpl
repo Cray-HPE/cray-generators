@@ -15,11 +15,11 @@ cray-service:
       livenessProbe:
         enabled: true
         port: <%= servicePort %>
-        path: <%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>
+        path: <%= serviceBasePath + '/versions' %>
       readinessProbe:
         enabled: true
         port: <%= servicePort %>
-        path: <%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>
+        path: <%= serviceBasePath + '/versions' %>
 
   <% if (requiresExternalAccess) { %>
   ingress:

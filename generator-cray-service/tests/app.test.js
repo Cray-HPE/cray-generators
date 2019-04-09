@@ -56,7 +56,6 @@ describe('generator-cray-service:app', () => {
       repoUrl: 'none',
       repoUsername: 'none',
       repoPassword: 'none',
-      hasWebFrontend: false,
       requiresExternalAccess: false,
       servicePort: '8080',
       language: 'python3',
@@ -139,24 +138,6 @@ describe('generator-cray-service:app', () => {
       ])
       assert.fileContent([
         [path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'), 'StatefulSet'],
-      ])
-    })
-  })
-
-  it('ensure hasWebFrontend prompt works as expected', () => {
-    const prompts = getDefaultPrompts()
-    prompts.repoUrl = 'https://stash.us.cray.com/CLOUD/cray-example-service.git'
-    prompts.repoUsername = 'user'
-    prompts.repoPassword = 'password'
-    prompts.hasWebFrontend = true
-    return createGenerator(prompts, defaultOptions).then(() => {
-      expect(gitCloneStub).toHaveBeenCalledWith(prompts.repoUrl, `${destinationRoot}/cray-example-service`, 'feature/cray-service-generator-updates')
-      assert.file([
-        path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'),
-      ])
-      assert.fileContent([
-        [path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'), 'ingress:'],
-        [path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'), 'path: /'],
       ])
     })
   })
