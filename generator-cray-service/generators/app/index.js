@@ -108,6 +108,7 @@ module.exports = class extends CrayGenerator {
 
   configuring () {
     this.props.serviceName  = this._getServiceName(this.responses.repoUrl)
+    this.props.chartName    = this._getChartName(this.responses.repoUrl)
     this.props.repoPath     = this._getRepoPath(this.responses.repoUrl)
     if (this.fse.existsSync(this.props.repoPath)) {
       this.fse.removeSync(this.props.repoPath)
@@ -192,6 +193,15 @@ module.exports = class extends CrayGenerator {
    */
   _getServiceName (repoUrl) {
     return repoUrl.replace(/\.git$/, '').split('/').slice(-1)[0]
+  }
+
+  /**
+   * Parses the git repo URL and returns the chart name
+   * @param {string} repoUrl the URL for the git repo being used.
+   * @returns {string}
+   */
+  _getChartName (repoUrl) {
+    return this._getServiceName(repoUrl).replace(/_/g, '-')
   }
 
   /**

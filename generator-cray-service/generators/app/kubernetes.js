@@ -54,11 +54,11 @@ module.exports = class extends CrayGeneratorSection {
     )
     this.generator._writeTemplate(
       'kubernetes/Chart.yaml',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/Chart.yaml`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/Chart.yaml`)
     )
     this.generator._writeTemplate(
       'kubernetes/values.yaml',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/values.yaml`),
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/values.yaml`),
       {
         existsCallback: (existingFile, variables) => {
           const valuesTemplateFile = this.generator.fse.readFileSync(this.generator.templatePath('kubernetes/values.yaml.tpl'), 'utf8')
@@ -104,23 +104,23 @@ module.exports = class extends CrayGeneratorSection {
     )
     this.generator._writeTemplate(
       'kubernetes/requirements.yaml',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/requirements.yaml`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/requirements.yaml`)
     )
     this.generator._writeTemplate(
       'kubernetes/README.md',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/README.md`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/README.md`)
     )
     this.generator._writeTemplate(
       'kubernetes/.gitignore',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/.gitignore`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/.gitignore`)
     )
     this.generator._writeTemplate(
       'kubernetes/templates/_helpers.tpl',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/templates/_helpers.tpl`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/templates/_helpers.tpl`)
     )
     this.generator._writeTemplate(
       'kubernetes/templates/NOTES.txt',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/templates/NOTES.txt`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/templates/NOTES.txt`)
     )
   }
 
