@@ -70,6 +70,16 @@ describe('generator-cray-service:app', () => {
     }
   }
 
+  it('ensure _getChartName() replaces underscores with -', () => {
+    const env = yeomanEnv.createEnv([], {}, new TestAdapter())
+    env.registerStub(require('../generators/app'), 'gen:test', path.resolve('../generators/app'))
+    const generator   = env.create('gen:test', {
+      arguments: [],
+      options: {},
+    })
+    expect(generator._getChartName('https://stash.us.cray.com/scm/cloud/cray_example_service.git')).toEqual('cray-example-service')
+  })
+
   it('ensure that an invalid repo URL triggers an error', () => {
     const prompts = getDefaultPrompts()
     const handleErrorStub = jest.spyOn(CrayGenerator.prototype, '_handleError').mockImplementation(() => {})

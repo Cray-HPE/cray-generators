@@ -3,7 +3,7 @@
 
 cray-service:
   type: <%= kubernetesType %>
-  nameOverride: <%= serviceName %>
+  nameOverride: <%= chartName %>
 
   containers:
     - name: <%= serviceName %>
