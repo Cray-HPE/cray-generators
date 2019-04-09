@@ -18,7 +18,7 @@ describe('cray-generator', () => {
   })
 
   it('ensure custom destinationRoot works as expected', () => {
-    const altRoot   = '/tmp' 
+    const altRoot   = '/tmp'
     const altOptions = Object.assign(options, { destinationRoot: altRoot })
     const generator = new CrayGenerator(args, altOptions)
     expect(generator.destinationRoot()).toEqual(altRoot)
@@ -76,6 +76,38 @@ describe('cray-generator', () => {
     const yosayStub = jest.spyOn(generator, 'yosay').mockImplementation(() => {})
     generator._notify('notification')
     expect(yosayStub).toHaveBeenCalledWith('notification', expect.anything())
+  })
+
+  it('expect _getVariables to work as expected', () => {
+    const generators = new CrayGenerator(args, options)
+    generators.props = {
+      one: 1
+    },
+    generators.responses = {
+      two: 2
+    }
+    expect(generators._getVariables()).toEqual({
+      one: 1,
+      two: 2,
+    })
+  })
+
+  it('expect _writeTemplate to work as expected', () => {
+    const generators = new CrayGenerator(args, options)
+    const copyTplStub = jest.spyOn(generators.fs, 'copyTpl').mockImplementation(() => {})
+    generators._writeTemplate('template')
+    expect(copyTplStub).toHaveBeenCalledWith('/tmp/templates/template.tpl', '/tmp/template', {})
+  })
+
+  it('expect _writeTemplate to work as expected with an existing file and existsCallback provided and told not to proceed with copy', () => {
+    const generators = new CrayGenerator(args, options)
+    generators.fse.existsSync = () => {
+      return true
+    }
+    const copyTplStub = jest.spyOn(generators.fs, 'copyTpl').mockImplementation(() => {})
+    const existsCallback = () => { return false }
+    generators._writeTemplate('template', 'dest-path', { existsCallback })
+    expect(copyTplStub).not.toHaveBeenCalled()
   })
 
 })

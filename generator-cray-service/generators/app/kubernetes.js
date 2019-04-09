@@ -1,4 +1,5 @@
 const CrayGeneratorSection = require('lib/cray-generator-section')
+const yaml = require('yaml')
 
 /**
  * Handling of kubernetes/infrastructure prompts and resources specifically
@@ -21,8 +22,7 @@ module.exports = class extends CrayGeneratorSection {
         },
         type: 'confirm',
         name: 'isStateful',
-        message: 'Does your service require any of the following: (1) stable, unique network identifiers (2) stable, persistent storage ' +
-                 '(3) ordered, graceful deployment and scaling (4) order, automated rolling updates (if you\'re unsure, just answer No)?',
+        message: 'Do you need a StatefulSet? If you aren\'t sure, then you don\'t.',
         default: false,
       },
       {
@@ -47,6 +47,7 @@ module.exports = class extends CrayGeneratorSection {
     } else if (this.generator.responses.isStateful) {
       this.generator.responses.kubernetesType = 'StatefulSet'
     }
+    this.generator.props.kubernetesTypeLower = this.generator.responses.kubernetesType.toLowerCase()
     this.generator._writeTemplate(
       'kubernetes/README-root.md',
       this.generator.destinationPath('kubernetes/README.md')
@@ -57,7 +58,49 @@ module.exports = class extends CrayGeneratorSection {
     )
     this.generator._writeTemplate(
       'kubernetes/values.yaml',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/values.yaml`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.serviceName}/values.yaml`),
+      {
+        existsCallback: (existingFile, variables) => {
+          const valuesTemplateFile = this.generator.fse.readFileSync(this.generator.templatePath('kubernetes/values.yaml.tpl'), 'utf8')
+          const headerComments = valuesTemplateFile.toString().split('\n\n')[0]
+          const existingValues = yaml.parse(this.generator.fse.readFileSync(existingFile, 'utf8'))
+          existingValues['cray-service'].type = variables.kubernetesType
+          if (variables.requiresExternalAccess) {
+            if (!existingValues['cray-service'].ingress) {
+              existingValues['cray-service'].ingress = {}
+            }
+            existingValues['cray-service'].ingress.enabled = true
+          } else {
+            if (existingValues['cray-service'].ingress) {
+              delete existingValues['cray-service'].ingress
+            }
+          }
+          if (variables.requiresEtcdCluster) {
+            if (!existingValues['cray-service'].etcdCluster) {
+              existingValues['cray-service'].etcdCluster = {}
+            }
+            existingValues['cray-service'].etcdCluster.enabled = true
+          } else {
+            if (existingValues['cray-service'].etcdCluster) {
+              delete existingValues['cray-service'].etcdCluster
+            }
+          }
+          if (variables.requiresSqlCluster) {
+            if (!existingValues['cray-service'].sqlCluster) {
+              existingValues['cray-service'].sqlCluster = {}
+            }
+            existingValues['cray-service'].sqlCluster.enabled = true
+          } else {
+            if (existingValues['cray-service'].sqlCluster) {
+              delete existingValues['cray-service'].sqlCluster
+            }
+          }
+          let valuesString = yaml.stringify(existingValues)
+          valuesString = valuesString.replace(/\sport:.*/g, `port: ${variables.servicePort}`)
+          this.generator.fse.writeFileSync(existingFile, `${headerComments}\n\n${valuesString}`)
+          return false
+        },
+      }
     )
     this.generator._writeTemplate(
       'kubernetes/requirements.yaml',

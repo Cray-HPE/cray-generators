@@ -2,24 +2,24 @@
 # for more info on values you can set/override
 
 cray-service:
-  type: "<%= kubernetesType %>"
-  nameOverride: "<%= serviceName %>"
+  type: <%= kubernetesType %>
+  nameOverride: <%= serviceName %>
 
   containers:
-    - name: "<%= serviceName %>"
+    - name: <%= serviceName %>
       image:
-        repository: "cray/<%= serviceName %>"
+        repository: cray/<%= serviceName %>
       ports:
         - name: http
           port: <%= servicePort %>
       livenessProbe:
         enabled: true
         port: <%= servicePort %>
-        path: "<%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>"
+        path: <%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>
       readinessProbe:
         enabled: true
         port: <%= servicePort %>
-        path: "<%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>"
+        path: <%= hasWebFrontend ? '/' : serviceBasePath + '/versions' %>
 
   <% if (requiresExternalAccess) { %>
   ingress:
@@ -31,6 +31,5 @@ cray-service:
   <% } %>
   <% if (requiresSqlCluster) { %>
   sqlCluster:
-    shared: false
     enabled: true
   <% } %>
