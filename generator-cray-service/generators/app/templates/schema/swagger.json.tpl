@@ -8,24 +8,6 @@
     "version": "0.0.1"
   },
   "paths": {
-    <% if (hasWebFrontend) { %>
-    "<%= servicePathsPrefix %>/": {
-      "get": {
-        "summary": "Web Frontend",
-        "tags": [
-          "cli_ignore"
-        ],
-        "produces": [
-          "text/html"
-        ],
-        "responses": {
-          "200": {
-            "description": "Web frontend for <%= serviceName %>"
-          }
-        }
-      }
-    },
-    <% } %>
     "<%= servicePathsPrefix %>/versions": {
       "get": {
         "summary": "Returns supported versions",
