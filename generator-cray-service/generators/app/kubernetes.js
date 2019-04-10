@@ -12,6 +12,21 @@ module.exports = class extends CrayGeneratorSection {
     return [
       {
         type: 'confirm',
+        name: 'hasUi',
+        message: 'Does your service have a UI?',
+        default: false,
+      },
+      {
+        when: (response) => {
+          return !response.hasUi
+        },
+        type: 'confirm',
+        name: 'requiresExternalAccess',
+        message: 'Does your service need to be accesible from outside of a Cray Kubernetes cluster?',
+        default: false,
+      },
+      {
+        type: 'confirm',
         name: 'isDaemon',
         message: 'Is your service a daemon, or in other words, does it need to run on every node of a Cray?',
         default: false,
@@ -41,6 +56,7 @@ module.exports = class extends CrayGeneratorSection {
   }
 
   writing () {
+    this.generator.responses.requiresExternalAccess = this.generator.responses.requiresExternalAccess || false
     this.generator.responses.kubernetesType = 'Deployment'
     if (this.generator.responses.isDaemon) {
       this.generator.responses.kubernetesType = 'DaemonSet'
@@ -65,11 +81,14 @@ module.exports = class extends CrayGeneratorSection {
           const headerComments = valuesTemplateFile.toString().split('\n\n')[0]
           const existingValues = yaml.parse(this.generator.fse.readFileSync(existingFile, 'utf8'))
           existingValues['cray-service'].type = variables.kubernetesType
-          if (variables.requiresExternalAccess) {
+          if (variables.requiresExternalAccess || variables.hasUi) {
             if (!existingValues['cray-service'].ingress) {
               existingValues['cray-service'].ingress = {}
             }
             existingValues['cray-service'].ingress.enabled = true
+            if (variables.hasUi) {
+              existingValues['cray-service'].ingress.ui = true
+            }
           } else {
             if (existingValues['cray-service'].ingress) {
               delete existingValues['cray-service'].ingress

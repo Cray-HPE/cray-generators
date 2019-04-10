@@ -68,12 +68,6 @@ module.exports = class extends CrayGenerator {
         message: 'And your password? (no credentials persist after this run)',
       },
       {
-        type: 'confirm',
-        name: 'requiresExternalAccess',
-        message: 'Will your service need to be accesible from outside of a Cray Kubernetes cluster?',
-        default: false,
-      },
-      {
         type: 'input',
         name: 'servicePort',
         message: 'On what port will your service listen for requests?',

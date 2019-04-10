@@ -21,9 +21,12 @@ cray-service:
         port: <%= servicePort %>
         path: <%= serviceBasePath + '/versions' %>
 
-  <% if (requiresExternalAccess) { %>
+  <% if (requiresExternalAccess || hasUi) { %>
   ingress:
     enabled: true
+    <% if (hasUi) { %>
+    ui: true
+    <% } %>
   <% } %>
   <% if (requiresEtcdCluster) { %>
   etcdCluster:
