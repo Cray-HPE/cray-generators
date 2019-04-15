@@ -1,6 +1,6 @@
 {
   "name": "generator-cray-service",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generator for a Cray service/API, with support for generating new services or updating existing ones with standard Cray resources",
   "repository": "https://stash.us.cray.com/projects/CLOUD/repos/cray-generators/",
   "homepage": "https://stash.us.cray.com/projects/CLOUD/repos/cray-generators/browse/generator-cray-service",
