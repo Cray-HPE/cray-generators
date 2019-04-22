@@ -1,10 +1,12 @@
 # Generators for Cray Projects
 
+### Requirements
+
+Before you can run any generator, you'll need to make sure the following requirements are met on your local machine:
+
+* [Install `craypc` and it's requirements](https://stash.us.cray.com/projects/CLOUD/repos/craypc/browse/README.md)
+
 ### Running Generators
-
-Local machine requirements:
-
-* [`craypc` and it's requirements](https://stash.us.cray.com/projects/CLOUD/repos/craypc/browse/README.md)
 
 Once `craypc` is installed, you can get further help:
 
