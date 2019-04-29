@@ -3,8 +3,11 @@ const Git               = require('lib/git')
 const ServiceSection    = require('./service')
 const KubernetesSection = require('./kubernetes')
 const CliSection        = require('./cli')
+const BaseChartVersion  = require('./base-chart-version')
 const path              = require('path')
 const defaultRoot       = path.resolve(__dirname, '..', '..', '.tmp')
+const semver            = require('semver')
+const Request           = require('lib/request')
 
 /**
  * Generator for a Cray service/API, with support for generating new services or updating existing ones with standard Cray resources.
@@ -27,6 +30,7 @@ module.exports = class extends CrayGenerator {
       default: false,
       description: 'Generic force flag, for forcing overwriting both local changes and the created branch/PR',
     })
+    this.request = new Request()
   }
 
   initializing () {
@@ -36,9 +40,10 @@ module.exports = class extends CrayGenerator {
     this.git        = new Git({ logger: this.log })
     this.branch     = 'feature/cray-service-generator-updates'
     this.sections   = {
-      service:    new ServiceSection(this, 'service'),
-      kubernetes: new KubernetesSection(this, 'kubernetes'),
-      cli:        new CliSection(this, 'cli'),
+      service:          new ServiceSection(this, 'service'),
+      kubernetes:       new KubernetesSection(this, 'kubernetes'),
+      baseChartVersion: new BaseChartVersion(this, 'base-chart-version'),
+      cli:              new CliSection(this, 'cli'),
     }
   }
 
@@ -68,6 +73,9 @@ module.exports = class extends CrayGenerator {
         message: 'And your password? (no credentials persist after this run)',
       },
       {
+        when: () => {
+          return this._isSectionEnabled('service') || this._isSectionEnabled('kubernetes')
+        },
         type: 'input',
         name: 'servicePort',
         message: 'On what port will your service listen for requests?',
@@ -104,12 +112,17 @@ module.exports = class extends CrayGenerator {
       return this.sections.service.configuring()
     }).then(() => {
       return this.sections.cli.configuring()
+    }).then(() => {
+      return this._getCurrentChartVersion('cray-service')
+    }).then((version) => {
+      this.props.baseChartVersion = version
     }).catch(this.handleError)
   }
 
   writing () {
     return this.sections.service.writing().then(() => {
       this.sections.kubernetes.writing()
+      this.sections.baseChartVersion.writing()
       this.sections.cli.writing()
     })
   }
@@ -190,6 +203,38 @@ module.exports = class extends CrayGenerator {
    */
   _getRepoPath (repoUrl) {
     return `${this.destinationRoot()}/${this._getServiceName(repoUrl)}`
+  }
+
+  /**
+   * Gets the most recent/current chart version from our central helm repo
+   *
+   * @param {string} chartName the name of the chart
+   * @returns {Promise} the resolved version
+   */
+  _getCurrentChartVersion (chartName) {
+    const uri     = `http://helmrepo.dev.cray.com:8080/api/charts/${chartName}`
+    const options = {
+      uri: uri,
+      method: 'GET',
+      json: true,
+    }
+    return this.request.request(options, (error, response) => {
+      if (error !== null) return error
+      if (response && response.statusCode != 200) {
+        return `Received response code ${response.statusCode} from ${uri}`
+      }
+      return true
+    }).then((result) => {
+      let version = '0.0.0'
+      if (result.body && result.body.length) {
+        result.body.forEach((publishedChart) => {
+          if (semver.gt(publishedChart.version, version)) {
+            version = publishedChart.version
+          }
+        })
+      }
+      return version
+    })
   }
 
 }

@@ -1,5 +1,5 @@
 ---
 dependencies:
   - name: cray-service
-    version: 1.0.1
+    version: "<%= baseChartVersion %>"
     repository: "@cray-internal"
