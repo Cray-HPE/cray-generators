@@ -115,7 +115,7 @@ module.exports = class extends CrayGeneratorSection {
             }
           }
           let valuesString = yaml.stringify(existingValues)
-          valuesString = valuesString.replace(/\sport:.*/g, `port: ${variables.servicePort}`)
+          valuesString = valuesString.replace(/\sport:.*/g, ` port: ${variables.servicePort}`)
           this.generator.fse.writeFileSync(existingFile, `${headerComments}\n\n${valuesString}`)
           return false
         },

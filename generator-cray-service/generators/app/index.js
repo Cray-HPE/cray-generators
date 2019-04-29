@@ -3,7 +3,6 @@ const Git               = require('lib/git')
 const ServiceSection    = require('./service')
 const KubernetesSection = require('./kubernetes')
 const CliSection        = require('./cli')
-const BaseChartVersion  = require('./base-chart-version')
 const path              = require('path')
 const defaultRoot       = path.resolve(__dirname, '..', '..', '.tmp')
 const semver            = require('semver')
@@ -40,10 +39,9 @@ module.exports = class extends CrayGenerator {
     this.git        = new Git({ logger: this.log })
     this.branch     = 'feature/cray-service-generator-updates'
     this.sections   = {
-      service:          new ServiceSection(this, 'service'),
-      kubernetes:       new KubernetesSection(this, 'kubernetes'),
-      baseChartVersion: new BaseChartVersion(this, 'base-chart-version'),
-      cli:              new CliSection(this, 'cli'),
+      service:      new ServiceSection(this, 'service'),
+      kubernetes:   new KubernetesSection(this, 'kubernetes'),
+      cli:          new CliSection(this, 'cli'),
     }
   }
 
@@ -122,7 +120,6 @@ module.exports = class extends CrayGenerator {
   writing () {
     return this.sections.service.writing().then(() => {
       this.sections.kubernetes.writing()
-      this.sections.baseChartVersion.writing()
       this.sections.cli.writing()
     })
   }
