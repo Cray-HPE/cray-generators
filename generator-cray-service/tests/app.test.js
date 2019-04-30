@@ -8,6 +8,7 @@ const fs            = require('fs-extra')
 const Git           = require('lib/git')
 const assert        = require('yeoman-assert')
 const yeomanEnv     = require('yeoman-environment')
+const Request       = require('lib/request')
 
 describe('generator-cray-service:app', () => {
 
@@ -17,6 +18,7 @@ describe('generator-cray-service:app', () => {
   }
   let shellExecStub     = null
   let gitCloneStub      = null
+  let requestStub       = null
 
   beforeEach(() => {
     shellExecStub = jest.spyOn(Shell.prototype, 'exec').mockImplementation(() => {
@@ -40,6 +42,9 @@ describe('generator-cray-service:app', () => {
     }
     if (gitCloneStub && gitCloneStub.mockRestore) {
       gitCloneStub.mockRestore()
+    }
+    if (requestStub && requestStub.mockRestore) {
+      requestStub.mockRestore()
     }
     fs.removeSync(destinationRoot)
   })
@@ -606,6 +611,38 @@ cray-service:
       expect(forkStub).toHaveBeenCalled()
       forkStub.mockRestore()
       cloneStub.mockRestore()
+    })
+  })
+
+  it('ensure that _getCurrentChartVersion() finds the right version', () => {
+    const env         = yeomanEnv.createEnv([], {}, new TestAdapter())
+    env.registerStub(require('../generators/app'), 'gen:test', path.resolve('../generators/app'))
+    const generator   = env.create('gen:test', {
+      arguments: [],
+      options: {},
+    })
+    generator.git     = new Git()
+    generator.request = new Request()
+    requestStub = jest.spyOn(generator.request, 'request').mockImplementation((_, callback) => {
+      return new Promise((resolve, reject) => {
+        const error = null
+        const response = {
+          statusCode: 200
+        }
+        const body = [{'name':'cray-service','version':'1.3.1'},{'name':'cray-service','version':'1.0.0'}]
+        const result = callback(error, response, body)
+        if (result === true) {
+          return resolve({response, body})
+        }
+        return reject(result)
+      })
+    })
+    expect.assertions(2)
+    generator._getCurrentChartVersion('cray-service').then((version) => {
+      expect(requestStub).toHaveBeenCalled()
+      expect(version).toEqual('1.3.1')
+    }).catch((error) => {
+      throw error
     })
   })
 

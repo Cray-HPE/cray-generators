@@ -4,7 +4,6 @@
 cray-service:
   type: <%= kubernetesType %>
   nameOverride: <%= chartName %>
-
   containers:
     - name: <%= serviceName %>
       image:
@@ -20,7 +19,6 @@ cray-service:
         enabled: true
         port: <%= servicePort %>
         path: <%= serviceBasePath + '/versions' %>
-
   <% if (requiresExternalAccess || hasUi) { %>
   ingress:
     enabled: true

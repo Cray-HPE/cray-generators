@@ -164,7 +164,7 @@ describe('git', () => {
   })
 
   it('ensure that openPullRequest() works with mocked request stub', () => {
-    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+    requestStub = jest.spyOn(git.request, 'request').mockImplementation((_, callback) => {
       return new Promise((resolve, reject) => {
         const response = { statusCode: 201 }
         const body = 'pull request created'
@@ -183,7 +183,7 @@ describe('git', () => {
   })
 
   it('ensure that openPullRequest() reacts appropriately with request error', () => {
-    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+    requestStub = jest.spyOn(git.request, 'request').mockImplementation((_, callback) => {
       return new Promise((resolve, reject) => {
         const response = { statusCode: 500 }
         const body = 'pull request failed'
@@ -201,7 +201,7 @@ describe('git', () => {
   })
 
   it('ensure that openPullRequest() reacts appropriately with internal error', () => {
-    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+    requestStub = jest.spyOn(git.request, 'request').mockImplementation((_, callback) => {
       return new Promise((resolve, reject) => {
         const error = new Error('FAILURE')
         const response = null
@@ -264,7 +264,7 @@ describe('git', () => {
   })
 
   it('ensure that fork() works with mocked request stub', () => {
-    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+    requestStub = jest.spyOn(git.request, 'request').mockImplementation((_, callback) => {
       return new Promise((resolve, reject) => {
         const response = { statusCode: 201 }
         const body = 'fork created'
@@ -283,7 +283,7 @@ describe('git', () => {
   })
 
   it('ensure that fork() reacts appropriately with request error', () => {
-    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+    requestStub = jest.spyOn(git.request, 'request').mockImplementation((_, callback) => {
       return new Promise((resolve, reject) => {
         const response = { statusCode: 500 }
         const body = 'fork failed'
@@ -301,7 +301,7 @@ describe('git', () => {
   })
 
   it('ensure that fork() reacts appropriately with internal error', () => {
-    requestStub = jest.spyOn(Git.prototype, 'request').mockImplementation((_, callback) => {
+    requestStub = jest.spyOn(git.request, 'request').mockImplementation((_, callback) => {
       return new Promise((resolve, reject) => {
         const error = new Error('FAILURE')
         const response = null
@@ -316,34 +316,6 @@ describe('git', () => {
     expect.assertions(1)
     return git.fork('https://stash.us.cray.com/scm/cloud/cray-example-service.git', 'https://stash.us.cray.com/scm/cloud/cray-repo.git').catch((error) => {
       expect(error.message).toMatch(/FAILURE/g)
-    })
-  })
-
-  it('ensure that the request method works to a live remote endpoint, callback forced to say request worked', () => {
-    expect.assertions(1)
-    const requestOptions  = {
-      uri: 'https://httpbin.org',
-      method: 'GET',
-    }
-    expect.assertions(1)
-    return git.request(requestOptions, () => {
-      return true
-    }).then((result) => {
-      expect(result.response.statusCode).toEqual(200)
-    })
-  })
-
-  it('ensure that the request method fails to a non-existent endpoint, callback forced to say request failed', () => {
-    expect.assertions(1)
-    const requestOptions  = {
-      uri: 'http://10.0.0.0.0.0.0.101',
-      method: 'GET',
-    }
-    expect.assertions(1)
-    return git.request(requestOptions, () => {
-      return 'FAILURE'
-    }).catch((error) => {
-      expect(error).toMatch(/FAILURE/)
     })
   })
 
