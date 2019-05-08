@@ -458,6 +458,64 @@ cray-service:
     })
   })
 
+  it('ensure values existsCallback() works for updating a pre cray-service v1.1.0 chart probes and ports', () => {
+    const prompts = getDefaultPrompts()
+    prompts.repoUrl = 'https://stash.us.cray.com/CLOUD/cray-example-service.git'
+    prompts.repoUsername = 'user'
+    prompts.repoPassword = 'password'
+    prompts.servicePort = '8099'
+    gitCloneStub.mockRestore()
+    gitCloneStub = jest.spyOn(Git.prototype, 'clone').mockImplementation((_, repoPath) => {
+      fs.mkdirSync(`${repoPath}`)
+      fs.mkdirSync(`${repoPath}/kubernetes`)
+      fs.mkdirSync(`${repoPath}/kubernetes/cray-example-service`)
+      fs.writeFileSync(`${repoPath}/kubernetes/cray-example-service/values.yaml`, `
+cray-service:
+  type: DaemonSet
+  nameOverride: cray-example-service
+
+  containers:
+    - name: cray-example-service
+      image:
+        repository: cray/cray-example-service
+      ports:
+        - name: http
+          port: 80
+      livenessProbe:
+        enabled: true
+        port: 80
+        path: /mypath
+        initialDelaySeconds: 20
+        periodSeconds: 5
+      readinessProbe:
+        enabled: true
+        port: 80
+        path: /mypath
+        initialDelaySeconds: 21
+        periodSeconds: 6
+`)
+      return Promise.resolve({
+        code: 0,
+        stdout: '',
+        stderr: '',
+      })
+    })
+    return createGenerator(prompts, defaultOptions).then(() => {
+      expect(gitCloneStub).toHaveBeenCalledWith(prompts.repoUrl, `${destinationRoot}/cray-example-service`, 'feature/cray-service-generator-updates')
+      assert.file([
+        path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'),
+      ])
+      const expectedLivenessProbeContent = new RegExp('livenessProbe:\\n\\s+initialDelaySeconds: 20\\n\\s+periodSeconds: 5\\n\\s+httpGet:\\n\\s+port: 8099\\n\\s+path: /mypath')
+      const expectedReadinessProbeContent = new RegExp('readinessProbe:\\n\\s+initialDelaySeconds: 21\\n\\s+periodSeconds: 6\\n\\s+httpGet:\\n\\s+port: 8099\\n\\s+path: /mypath')
+      const expectedPortsContent = new RegExp('ports:\\n\\s+.*name: http\\n\\s+containerPort: 8099\\n\\s+protocol: TCP')
+      assert.fileContent([
+        [path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'), expectedLivenessProbeContent],
+        [path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'), expectedReadinessProbeContent],
+        [path.resolve(`${destinationRoot}/cray-example-service`, 'kubernetes', 'cray-example-service', 'values.yaml'), expectedPortsContent],
+      ])
+    })
+  })
+
   it('ensure _processGitCommitAndPushResult works as expected for branch created', () => {
     const notifyStub  = jest.spyOn(CrayGenerator.prototype, '_notify').mockImplementation(() => {})
     const env         = yeomanEnv.createEnv([], {}, new TestAdapter())

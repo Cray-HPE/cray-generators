@@ -114,9 +114,71 @@ module.exports = class extends CrayGeneratorSection {
               delete existingValues['cray-service'].sqlCluster
             }
           }
+          const getNewProbe = (probe) => {
+            if (probe) {
+              if (probe.enabled) {
+                let newProbe = {
+                  initialDelaySeconds: probe.initialDelaySeconds || 5,
+                  periodSeconds: probe.periodSeconds || 3,
+                }
+                if (probe.type && probe.type == 'tcp') {
+                  newProbe.tcpSocket = {
+                    port: variables.servicePort,
+                  }
+                } else {
+                  newProbe.httpGet = {
+                    port: variables.servicePort,
+                    path: probe.path || `${variables.serviceBasePath}/versions`,
+                  }
+                }
+                return newProbe
+              }
+              return false
+            }
+            return null
+          }
+          const replaceProbes = (containers) => {
+            if (containers && (containers instanceof Array)) {
+              for (let i = 0; i < containers.length; i++) {
+                let newProbe = null
+                newProbe = getNewProbe(containers[i].livenessProbe)
+                if (newProbe === false) {
+                  delete containers[i].livenessProbe
+                } else if (newProbe !== null) {
+                  containers[i].livenessProbe = newProbe
+                }
+                newProbe = getNewProbe(containers[i].readinessProbe)
+                if (newProbe === false) {
+                  delete containers[i].readinessProbe
+                } else if (newProbe !== null) {
+                  containers[i].readinessProbe = newProbe
+                }
+              }
+            }
+          }
+          const replacePorts = (containers) => {
+            if (containers && (containers instanceof Array)) {
+              for (let i = 0; i < containers.length; i++) {
+                if (containers[i].ports && (containers[i].ports instanceof Array)) {
+                  for (let ii = 0; ii < containers[i].ports.length; ii++) {
+                    if (containers[i].ports[ii].port) {
+                      containers[i].ports[ii].containerPort = containers[i].ports[ii].port
+                      containers[i].ports[ii].protocol = 'TCP'
+                      delete containers[i].ports[ii].port
+                    }
+                  }
+                }
+              }
+            }
+          }
+          replacePorts(existingValues['cray-service'].containers)
+          replacePorts(existingValues['cray-service'].initContainers)
+          replaceProbes(existingValues['cray-service'].containers)
+          replaceProbes(existingValues['cray-service'].initContainers)
           let valuesString = yaml.stringify(existingValues)
           valuesString = valuesString.replace(/\sport:.*/g, ` port: ${variables.servicePort}`)
-          this.generator.fse.writeFileSync(existingFile, `${headerComments}\n\n${valuesString}`)
+          valuesString = valuesString.replace(/\scontainerPort:.*/g, ` containerPort: ${variables.servicePort}`)
+          this.generator.fse.writeFileSync(existingFile, `${headerComments}\n\n${valuesString}\n`)
           return false
         },
       }
