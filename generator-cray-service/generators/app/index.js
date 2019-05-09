@@ -113,7 +113,7 @@ module.exports = class extends CrayGenerator {
     }).then(() => {
       return this._getCurrentChartVersion('cray-service')
     }).then((version) => {
-      this.props.baseChartVersion = version
+      this.props.baseChartVersion = `~${version}`
     }).catch(this.handleError)
   }
 
