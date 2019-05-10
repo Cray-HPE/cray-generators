@@ -70,7 +70,16 @@ module.exports = class extends CrayGeneratorSection {
     )
     this.generator._writeTemplate(
       'kubernetes/Chart.yaml',
-      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/Chart.yaml`)
+      this.generator.destinationPath(`kubernetes/${this.generator.props.chartName}/Chart.yaml`),
+      {
+        existsCallback: (existingFile) => {
+          let existingMetaString = this.generator.fse.readFileSync(existingFile, 'utf8')
+          const existingMeta = yaml.parse(existingMetaString)
+          const existingVersion = existingMeta.version
+          existingMetaString = existingMetaString.replace(/^version:.*/g, `version: ${existingVersion}`)
+          this.generator.fse.writeFileSync(existingFile, `${existingMetaString}`)
+        }
+      }
     )
     this.generator._writeTemplate(
       'kubernetes/values.yaml',

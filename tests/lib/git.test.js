@@ -95,8 +95,8 @@ describe('git', () => {
   })
 
   it('ensure commitAndPush() operates as expected with full run and force push', () => {
-    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, defaultBranch) => {
-      return Promise.resolve({ repoUrl, branchName, defaultBranch })
+    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, options) => {
+      return Promise.resolve({ repoUrl, branchName, options })
     })
     return git.commitAndPush('/tmp/repo', 'a commit message', { force: true, openPullRequest: true }).then(() => {
       expect(shellExecStub).toHaveBeenCalledWith('git', ['status', '-s'], { cwd: '/tmp/repo' })
@@ -106,14 +106,14 @@ describe('git', () => {
       expect(shellExecStub).toHaveBeenCalledWith('git', ['push', '-f', 'origin', 'mock stdout'], { cwd: '/tmp/repo', mask: ['password'] })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'get-url', 'origin'], { cwd: '/tmp/repo', silent: true })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'show', 'origin'], { cwd: '/tmp/repo', silent: true })
-      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', { defaultBranch: null, destinationRepoUrl: 'mock stdout' })
+      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', { defaultBranch: null, destinationRepoUrl: 'mock stdout', description: 'Pull request submitted by generators' })
       openPullRequestStub.mockRestore()
     })
   })
 
   it('ensure commitAndPush() operates as expected with full run and no force push and no open PR specified', () => {
-    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, defaultBranch) => {
-      return Promise.resolve({ repoUrl, branchName, defaultBranch })
+    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, options) => {
+      return Promise.resolve({ repoUrl, branchName, options })
     })
     return git.commitAndPush('/tmp/repo', 'a commit message').then(() => {
       expect(shellExecStub).toHaveBeenCalledWith('git', ['status', '-s'], { cwd: '/tmp/repo' })
@@ -126,8 +126,8 @@ describe('git', () => {
   })
 
   it('ensure commitAndPush() operates as expected with full run with custom PR destination, no force push', () => {
-    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, defaultBranch) => {
-      return Promise.resolve({ repoUrl, branchName, defaultBranch })
+    const openPullRequestStub = jest.spyOn(git, 'openPullRequest').mockImplementation((repoUrl, branchName, options) => {
+      return Promise.resolve({ repoUrl, branchName, options })
     })
     return git.commitAndPush('/tmp/repo', 'a commit message', { pullRequestDestination: 'http://pr-dest', openPullRequest: true }).then(() => {
       expect(shellExecStub).toHaveBeenCalledWith('git', ['status', '-s'], { cwd: '/tmp/repo' })
@@ -137,7 +137,7 @@ describe('git', () => {
       expect(shellExecStub).toHaveBeenCalledWith('git', ['push', 'origin', 'mock stdout'], { cwd: '/tmp/repo', mask: ['password'] })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'get-url', 'origin'], { cwd: '/tmp/repo', silent: true })
       expect(shellExecStub).toHaveBeenCalledWith('git', ['remote', 'show', 'origin'], { cwd: '/tmp/repo', silent: true })
-      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', { defaultBranch: null, destinationRepoUrl: 'http://pr-dest' })
+      expect(openPullRequestStub).toHaveBeenCalledWith('mock stdout', 'mock stdout', { defaultBranch: null, destinationRepoUrl: 'http://pr-dest', description: 'Pull request submitted by generators' })
       openPullRequestStub.mockRestore()
     })
   })
