@@ -85,15 +85,6 @@ describe('generator-cray-service:app', () => {
     expect(generator._getChartName('https://stash.us.cray.com/scm/cloud/cray_example_service.git')).toEqual('cray-example-service')
   })
 
-  it('ensure that an invalid repo URL triggers an error', () => {
-    const prompts = getDefaultPrompts()
-    const handleErrorStub = jest.spyOn(CrayGenerator.prototype, '_handleError').mockImplementation(() => {})
-    return createGenerator(prompts, {}).catch(() => {
-      expect(handleErrorStub).toHaveBeenCalled()
-      handleErrorStub.mockRestore()
-    })
-  })
-
   it('ensure that a common run can complete with basic prompts and expected output', () => {
     const prompts = getDefaultPrompts()
     prompts.repoUrl = 'https://stash.us.cray.com/CLOUD/cray-example-service.git'
