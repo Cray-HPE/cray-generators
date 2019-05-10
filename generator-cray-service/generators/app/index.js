@@ -95,6 +95,7 @@ module.exports = class extends CrayGenerator {
     this.props.serviceName  = this._getServiceName(this.responses.repoUrl)
     this.props.chartName    = this._getChartName(this.responses.repoUrl)
     this.props.repoPath     = this._getRepoPath(this.responses.repoUrl)
+    this.props.repoUrlParts = this.git.getRepoUrlParts(this.responses.repoUrl)
     if (this.fse.existsSync(this.props.repoPath)) {
       this.fse.removeSync(this.props.repoPath)
     }
