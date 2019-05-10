@@ -134,7 +134,13 @@ module.exports = class extends CrayGenerator {
       this.notify('Not committing/pushing changes because the push option was set to off')
     } else {
       const commitMessage = 'cray-service generator updates'
-      return this.git.commitAndPush(this.props.repoPath, commitMessage, { force: this.options.force, openPullRequest: true }).then((result) => {
+      return this.git.commitAndPush(
+        this.props.repoPath, commitMessage, {
+          force: this.options.force,
+          openPullRequest: true,
+          pullRequestDescription: 'Pull request automatically opened by the Cray service generator. Please note that if ' +
+            'your Helm chart has changed, you will need to increment it\'s version in Chart.yaml yourself.'
+        }).then((result) => {
         this._processGitCommitAndPushResult(result, this.responses.repoUrl, this.branch)
         return this.sections.cli.install()
       }).catch((error) => {
@@ -172,7 +178,8 @@ module.exports = class extends CrayGenerator {
     } else if (result == this.git.BRANCH_CREATED) {
       this._notify(`Branch ${branchName} was created in ${repoUrl}`)
     } else {
-      this._notify(`A pull request was opened automatically for ${branchName} in ${repoUrl}`)
+      let notifyMessage = `A pull request was opened automatically for ${branchName} in ${repoUrl}`
+      this._notify(notifyMessage)
     }
   }
 
