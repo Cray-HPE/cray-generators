@@ -3,7 +3,7 @@
 {{- $volume = .Cwd -}}
 {{- end -}}
 ---
-version: "1.2.4"
+version: "1.2.5"
 exec:
   container: craypc-generators
   interactive: true
