@@ -65,6 +65,10 @@ module.exports = class extends CrayGeneratorSection {
     }
     this.generator.props.kubernetesTypeLower = this.generator.responses.kubernetesType.toLowerCase()
     this.generator._writeTemplate(
+      'kubernetes/githooks/pre-commit',
+      this.generator.destinationPath('.githooks/pre-commit')
+    )
+    this.generator._writeTemplate(
       'kubernetes/README-root.md',
       this.generator.destinationPath('kubernetes/README.md')
     )
