@@ -2,5 +2,5 @@ node_modules
 jsdocs/
 coverage/
 .craypc/
-!.craypc/**/links.sh
-!.craypc/**/generators-entrypoint.sh
+!.craypc/containers/links.sh
+!.craypc/containers/generators-entrypoint.sh

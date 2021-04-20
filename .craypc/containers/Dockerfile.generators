@@ -1,5 +1,5 @@
 ######## base ########
-FROM node:10-alpine AS base
+FROM node:lts-alpine3.12 as base
 
 RUN apk add --no-cache git docker
 
