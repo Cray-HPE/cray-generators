@@ -36,7 +36,7 @@
     "generator-generator": "^4.0.2",
     "request": "2.88.0",
     "semver": "^6.0.0",
-    "tmp": "^0.1.0",
+    "tmp": "^0.2.5",
     "yaml": "^1.4.0",
     "yeoman-generator": "^3.1.1",
     "yo": "^2.0.5",
