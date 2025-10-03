@@ -31,7 +31,7 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "falsey": "^1.0.0",
-    "find": "^0.2.9",
+    "find": "^0.3.0",
     "fs-extra": "^7.0.1",
     "generator-generator": "^4.0.2",
     "request": "2.88.0",
