@@ -39,7 +39,7 @@
     "tmp": "^0.1.0",
     "yaml": "^1.4.0",
     "yeoman-generator": "^3.1.1",
-    "yo": "^2.0.5",
+    "yo": "^4.3.1",
     "yosay": "^2.0.2"
   },
   "devDependencies": {
