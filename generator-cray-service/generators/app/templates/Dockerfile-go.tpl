@@ -1,5 +1,5 @@
 # Debian image with latest Go version
-FROM golang
+FROM golang:1.26rc2
 
 # Create and set working directory
 RUN mkdir -p /go/src/<%= serviceName %>
